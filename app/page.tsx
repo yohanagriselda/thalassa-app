@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -159,7 +161,7 @@ export default function Home() {
           z-index: 2;
         }
 
-        /* HERO CONTENTs */
+        /* HERO CONTENT */
         .hero-content {
           position: relative;
           z-index: 10;
@@ -387,7 +389,7 @@ export default function Home() {
             <span className="brand-sub">Shipping &amp; Maritime</span>
           </div>
         </div>
-        <button className="btn-login">Login</button>
+        <button className="btn-login" onClick={() => router.push('/login')}>Login</button>
       </nav>
 
       {/* HERO SECTION */}
