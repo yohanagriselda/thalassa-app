@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
@@ -337,6 +336,201 @@ export default function Home() {
           margin-top: 4px;
         }
 
+        /* ── FEATURES SECTION ── */
+        .features-section {
+          background: #0d0d18;
+          padding: 90px 80px;
+          border-top: 1px solid rgba(255,255,255,0.04);
+        }
+ 
+        .section-header {
+          text-align: center;
+          margin-bottom: 56px;
+        }
+ 
+        .section-title {
+          font-family: 'Roboto Mono', monospace;
+          font-weight: 700;
+          font-size: 28px;
+          color: var(--text-white);
+          letter-spacing: -0.01em;
+          margin-bottom: 10px;
+        }
+ 
+        .section-sub {
+          font-family: 'Roboto Mono', monospace;
+          font-size: 12px;
+          color: rgba(255,255,255,0.4);
+          letter-spacing: 0.04em;
+        }
+ 
+        .features-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 20px;
+          max-width: 1100px;
+          margin: 0 auto;
+        }
+ 
+        .feature-card {
+          background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(255,255,255,0.07);
+          border-radius: 14px;
+          padding: 28px 24px;
+          transition: border-color 0.2s, background 0.2s, transform 0.2s;
+        }
+ 
+        .feature-card:hover {
+          border-color: rgba(139,92,246,0.4);
+          background: rgba(139,92,246,0.06);
+          transform: translateY(-3px);
+        }
+ 
+        .feature-icon {
+          width: 42px;
+          height: 42px;
+          border-radius: 10px;
+          background: rgba(139,92,246,0.15);
+          border: 1px solid rgba(139,92,246,0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 16px;
+        }
+ 
+        .feature-name {
+          font-family: 'Roboto Mono', monospace;
+          font-weight: 700;
+          font-size: 11px;
+          letter-spacing: 0.1em;
+          color: var(--text-white);
+          text-transform: uppercase;
+          margin-bottom: 10px;
+        }
+ 
+        .feature-desc {
+          font-family: 'Roboto Mono', monospace;
+          font-size: 11px;
+          line-height: 1.7;
+          color: rgba(255,255,255,0.45);
+          letter-spacing: 0.02em;
+        }
+ 
+        /* ── MARITIME SECTION ── */
+        .maritime-section {
+          background: linear-gradient(135deg, #1a0a3a 0%, #0f0720 40%, #120830 100%);
+          padding: 90px 80px;
+          display: flex;
+          align-items: center;
+          gap: 80px;
+          border-top: 1px solid rgba(139,92,246,0.15);
+          position: relative;
+          overflow: hidden;
+        }
+ 
+        .maritime-section::before {
+          content: '';
+          position: absolute;
+          top: -200px;
+          right: -200px;
+          width: 600px;
+          height: 600px;
+          background: radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%);
+          pointer-events: none;
+        }
+ 
+        .maritime-left {
+          flex: 1;
+          position: relative;
+          z-index: 2;
+        }
+ 
+        .maritime-label {
+          font-family: 'Roboto Mono', monospace;
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 0.2em;
+          color: var(--purple-light);
+          text-transform: uppercase;
+          margin-bottom: 18px;
+          display: block;
+        }
+ 
+        .maritime-title {
+          font-family: 'Roboto Mono', monospace;
+          font-weight: 700;
+          font-size: 28px;
+          color: var(--text-white);
+          line-height: 1.35;
+          margin-bottom: 20px;
+          letter-spacing: -0.01em;
+        }
+ 
+        .maritime-desc {
+          font-family: 'Roboto Mono', monospace;
+          font-size: 11px;
+          line-height: 1.85;
+          color: rgba(255,255,255,0.5);
+          margin-bottom: 28px;
+          max-width: 480px;
+        }
+ 
+        .maritime-bullets {
+          list-style: none;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+ 
+        .maritime-bullets li {
+          font-family: 'Roboto Mono', monospace;
+          font-size: 11px;
+          color: rgba(255,255,255,0.6);
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          letter-spacing: 0.02em;
+        }
+ 
+        .maritime-bullets li::before {
+          content: '';
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: var(--purple-light);
+          flex-shrink: 0;
+        }
+ 
+        .maritime-right {
+          flex: 0 0 400px;
+          position: relative;
+          z-index: 2;
+        }
+ 
+        .maritime-img-wrap {
+          border-radius: 16px;
+          overflow: hidden;
+          border: 1px solid rgba(255,255,255,0.1);
+          box-shadow:
+            0 24px 80px rgba(0,0,0,0.5),
+            0 0 0 1px rgba(139,92,246,0.1);
+          position: relative;
+        }
+ 
+        .maritime-img {
+          width: 100%;
+          height: 280px;
+          object-fit: cover;
+          display: block;
+          filter: brightness(0.8) saturate(0.85);
+        }
+ 
+        .maritime-img-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(135deg, rgba(139,92,246,0.15) 0%, transparent 60%);
+        }
+
         /* FOOTER */
         .footer {
           background: #0d0d14;
@@ -394,7 +588,6 @@ export default function Home() {
 
       {/* HERO SECTION */}
       <section className="hero">
-        {/* Real background photo */}
         <img
           src="/background_cp.jpg"
           alt="Background"
@@ -421,7 +614,7 @@ export default function Home() {
             <div className="stats-row">
               <div>
                 <span className="stat-num">6+</span>
-                <span className="stat-lbl">Armada Kapal</span>
+                <span className="stat-lbl">Fleet</span>
               </div>
               <div>
                 <span className="stat-num">3s</span>
@@ -447,6 +640,102 @@ export default function Home() {
               <span className="badge-title">Thalassa Sisterhood Group</span>
               <span className="badge-sub">Est. 2026 · Shipping &amp; Maritime</span>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── FEATURES ── */}
+      <section className="features-section">
+        <div className="section-header">
+          <h2 className="section-title">Everything you need to monitor your fleet</h2>
+          <p className="section-sub">Powerful features for comprehensive fleet management</p>
+        </div>
+        <div className="features-grid">
+          <div className="feature-card">
+            <div className="feature-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.9)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M16.9 16.9l2.1 2.1M19.1 4.9l-2.1 2.1M7.1 16.9l-2.1 2.1"/>
+              </svg>
+            </div>
+            <div className="feature-name">Real – Time Tracking</div>
+            <div className="feature-desc">Live GPS position tracking with global coverage and 3-second update intervals from all vessels.</div>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.9)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+              </svg>
+            </div>
+            <div className="feature-name">Analytics &amp; Insights</div>
+            <div className="feature-desc">Performance reports, fuel consumption analysis, and route optimization with deep data insights.</div>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.9)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+            </div>
+            <div className="feature-name">Smart Alerts</div>
+            <div className="feature-desc">Automated threshold alerts and customizable notifications via email, SMS, and in-app channels.</div>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.9)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+              </svg>
+            </div>
+            <div className="feature-name">Multi-Fleet Dashboard</div>
+            <div className="feature-desc">Manage entire fleets from a single dashboard with dynamic filtering and real-time status updates.</div>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.9)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+              </svg>
+            </div>
+            <div className="feature-name">Voyage Reports</div>
+            <div className="feature-desc">Auto-generated voyage reports with logs, ports, and operation access levels for full documentation.</div>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.9)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+            </div>
+            <div className="feature-name">High Performance</div>
+            <div className="feature-desc">Built for high availability with 99.9% uptime SLA and sub-second response times for critical data.</div>
+          </div>
+        </div>
+      </section>
+ 
+      {/* ── BUILT FOR MARITIME PROFESSIONALS ── */}
+      <section className="maritime-section">
+        <div className="maritime-left">
+          <span className="maritime-label">Built for Maritime Professionals</span>
+          <h2 className="maritime-title">
+            PrimeLog Fleet combines cutting-edge<br />
+            technology with an intuitive interface<br />
+            designed for operators and fleet managers
+          </h2>
+          <ul className="maritime-bullets">
+            <li>Real-time data updates every 3 seconds with global tracking</li>
+            <li>Interactive map interface with vessel tracking</li>
+            <li>Comprehensive analytics dashboard</li>
+            <li>Multi-level access: Operator, Admin, and Manager roles</li>
+            <li>Fully-detailed voyage history (ports, routes, ETAs)</li>
+            <li>Multi-access role-based control</li>
+          </ul>
+        </div>
+        <div className="maritime-right">
+          <div className="maritime-img-wrap">
+            <img src="/gambar-cp-3.png" alt="Maritime Operations" className="maritime-img" />
+            <div className="maritime-img-overlay" />
           </div>
         </div>
       </section>

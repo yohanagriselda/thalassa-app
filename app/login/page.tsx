@@ -7,12 +7,11 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [accessLevel, setAccessLevel] = useState<"operator" | "admin">("operator");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle login logic here
-    console.log({ email, password, accessLevel });
+    console.log({ email, password});
   };
 
   return (
@@ -167,61 +166,6 @@ export default function LoginPage() {
           background: rgba(139,92,246,0.08);
         }
 
-        /* ACCESS LEVEL */
-        .access-label {
-          font-family: 'Roboto Mono', monospace;
-          font-size: 11px;
-          color: rgba(255,255,255,0.55);
-          margin-bottom: 10px;
-          letter-spacing: 0.04em;
-          display: block;
-        }
-
-        .access-options {
-          display: flex;
-          gap: 10px;
-          margin-bottom: 22px;
-        }
-
-        .access-btn {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 6px;
-          padding: 12px 8px;
-          border-radius: 10px;
-          border: 1.5px solid rgba(255,255,255,0.1);
-          background: rgba(255,255,255,0.04);
-          cursor: pointer;
-          transition: all 0.2s;
-          font-family: 'Roboto Mono', monospace;
-          font-size: 11px;
-          color: rgba(255,255,255,0.5);
-          letter-spacing: 0.04em;
-        }
-
-        .access-btn svg {
-          opacity: 0.5;
-          transition: opacity 0.2s;
-        }
-
-        .access-btn.active {
-          border-color: rgba(139,92,246,0.7);
-          background: rgba(139,92,246,0.15);
-          color: rgba(255,255,255,0.9);
-        }
-
-        .access-btn.active svg {
-          opacity: 1;
-        }
-
-        .access-btn:hover:not(.active) {
-          border-color: rgba(255,255,255,0.2);
-          background: rgba(255,255,255,0.07);
-          color: rgba(255,255,255,0.7);
-        }
-
         /* SUBMIT BUTTON */
         .btn-submit {
           width: 100%;
@@ -301,6 +245,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="username"
+                required
               />
             </div>
 
@@ -312,40 +257,8 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"
+                required
               />
-            </div>
-
-            {/* Access Level */}
-            <div style={{ marginBottom: 0 }}>
-              <span className="access-label">Access Level</span>
-              <div className="access-options">
-                <button
-                  type="button"
-                  className={`access-btn ${accessLevel === "operator" ? "active" : ""}`}
-                  onClick={() => setAccessLevel("operator")}
-                >
-                  {/* Person icon */}
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="8" r="4"/>
-                    <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-                  </svg>
-                  Operator
-                </button>
-                <button
-                  type="button"
-                  className={`access-btn ${accessLevel === "admin" ? "active" : ""}`}
-                  onClick={() => setAccessLevel("admin")}
-                >
-                  {/* Shield/admin icon */}
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="8" r="4"/>
-                    <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-                    <circle cx="19" cy="19" r="3" fill="none"/>
-                    <path d="M19 17.5v1.5l1 1" strokeWidth="1.2"/>
-                  </svg>
-                  Admin
-                </button>
-              </div>
             </div>
 
             <button type="submit" className="btn-submit">
