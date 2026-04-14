@@ -411,12 +411,12 @@ export default function Home() {
             <h1 className="title-fleet">Fleet System</h1>
 
             <p className="hero-desc">
-              Sistem monitoring armada kapal Thalassa Sisterhood<br />
-              Group – pantau posisi, status, dan rute kapal secara<br />
-              real-time.
+              Real-time ship monitoring for position,<br />
+              weather, and route intelligence. Monitor your<br />
+              entire fleet from one powerful dashboard.
             </p>
 
-            <a href="/login" className="btn-masuk">Masuk ke Sistem</a>
+            <a href="/login" className="btn-masuk">Get Started</a>
 
             <div className="stats-row">
               <div>
