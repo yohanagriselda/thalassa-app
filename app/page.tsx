@@ -159,7 +159,7 @@ export default function Home() {
           z-index: 2;
         }
 
-        /* HERO CONTENT */
+        /* HERO CONTENTs */
         .hero-content {
           position: relative;
           z-index: 10;
