@@ -238,24 +238,34 @@ export default function Home() {
 
         .stats-row {
           display: flex;
-          gap: 52px;
+          justify-content: flex-start;
+          gap: 60px;
+          margin-top: 20px;
+        }
+
+        .stats-row > div {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
         }
 
         .stat-num {
           font-family: 'Roboto Mono', monospace;
           font-weight: 700;
-          font-size: 34px;
+          font-size: 38px;
           color: var(--purple-light);
-          display: block;
+          line-height: 1;
+          margin-bottom: 8px;
           letter-spacing: -0.02em;
         }
 
         .stat-lbl {
           font-family: 'Roboto Mono', monospace;
-          font-size: 10px;
+          font-size: 11px;
           color: rgba(255,255,255,0.45);
-          letter-spacing: 0.06em;
+          letter-spacing: 0.05em;
           text-transform: uppercase;
+          white-space: nowrap;
         }
 
         /* LOGO BADGE */
@@ -461,7 +471,7 @@ export default function Home() {
         .maritime-title {
           font-family: 'Roboto Mono', monospace;
           font-weight: 700;
-          font-size: 28px;
+          font-size: 22px;
           color: var(--text-white);
           line-height: 1.35;
           margin-bottom: 20px;
@@ -470,7 +480,7 @@ export default function Home() {
  
         .maritime-desc {
           font-family: 'Roboto Mono', monospace;
-          font-size: 11px;
+          font-size: 18px;
           line-height: 1.85;
           color: rgba(255,255,255,0.5);
           margin-bottom: 28px;
@@ -487,7 +497,7 @@ export default function Home() {
         .maritime-bullets li {
           font-family: 'Roboto Mono', monospace;
           font-size: 11px;
-          color: rgba(255,255,255,0.6);
+          color: white;
           display: flex;
           align-items: center;
           gap: 10px;
@@ -660,7 +670,7 @@ export default function Home() {
               </svg>
             </div>
             <div className="feature-name">Real – Time Tracking</div>
-            <div className="feature-desc">Live GPS position tracking with global coverage and 3-second update intervals from all vessels.</div>
+            <div className="feature-desc">MONITOR VESSEL POSITIONS WITH GPS PRECISIONS AND LIVE COORDINATE UPDATES EVERY 3 SECONDS.</div>
           </div>
           <div className="feature-card">
             <div className="feature-icon">
@@ -669,7 +679,7 @@ export default function Home() {
               </svg>
             </div>
             <div className="feature-name">Analytics &amp; Insights</div>
-            <div className="feature-desc">Performance reports, fuel consumption analysis, and route optimization with deep data insights.</div>
+            <div className="feature-desc">PERFORMANCE METRICS, FUEL CONSUMPTION ANALYSIS, AND ROUTE OPTIMAZATION DATA.</div>
           </div>
           <div className="feature-card">
             <div className="feature-icon">
@@ -679,7 +689,7 @@ export default function Home() {
               </svg>
             </div>
             <div className="feature-name">Smart Alerts</div>
-            <div className="feature-desc">Automated threshold alerts and customizable notifications via email, SMS, and in-app channels.</div>
+            <div className="feature-desc">WEATHER WARNINGS, MAINTENANCE ALERTS, AND EMERGENCY NOTIFICATIONS WITH AUDIO.</div>
           </div>
           <div className="feature-card">
             <div className="feature-icon">
@@ -689,7 +699,7 @@ export default function Home() {
               </svg>
             </div>
             <div className="feature-name">Multi-Fleet Dashboard</div>
-            <div className="feature-desc">Manage entire fleets from a single dashboard with dynamic filtering and real-time status updates.</div>
+            <div className="feature-desc">ADVANCE ROUTE PLANNING WITH ETA CALCULATIONS AND DEVIATION DETECTION.</div>
           </div>
           <div className="feature-card">
             <div className="feature-icon">
@@ -701,7 +711,7 @@ export default function Home() {
               </svg>
             </div>
             <div className="feature-name">Voyage Reports</div>
-            <div className="feature-desc">Auto-generated voyage reports with logs, ports, and operation access levels for full documentation.</div>
+            <div className="feature-desc">ROLE-BASED AUTHENTICATION WITH ADMIN AND OPERATOR ACSESS LEVELS.</div>
           </div>
           <div className="feature-card">
             <div className="feature-icon">
@@ -710,7 +720,7 @@ export default function Home() {
               </svg>
             </div>
             <div className="feature-name">High Performance</div>
-            <div className="feature-desc">Built for high availability with 99.9% uptime SLA and sub-second response times for critical data.</div>
+            <div className="feature-desc">LIGHTNING-FAST DASHBOARD WITH REAL-TIME DATA STREAMING AND MINIMAL LATENCY.</div>
           </div>
         </div>
       </section>
@@ -720,17 +730,14 @@ export default function Home() {
         <div className="maritime-left">
           <span className="maritime-label">Built for Maritime Professionals</span>
           <h2 className="maritime-title">
-            PrimeLog Fleet combines cutting-edge<br />
-            technology with an intuitive interface<br />
-            designed for operators and fleet managers
+            PrimeLog Fleet combines cutting-edge technology with an intuitive interface designed for operators and fleet managers
           </h2>
           <ul className="maritime-bullets">
-            <li>Real-time data updates every 3 seconds with global tracking</li>
-            <li>Interactive map interface with vessel tracking</li>
+            <li>Real-time data updates every 3 seconds</li>
+            <li>Interactive maps with vessel tracking</li>
             <li>Comprehensive analytics dashboard</li>
-            <li>Multi-level access: Operator, Admin, and Manager roles</li>
-            <li>Fully-detailed voyage history (ports, routes, ETAs)</li>
-            <li>Multi-access role-based control</li>
+            <li>Advanced alert system with notifications</li>
+            <li>Role-based access control</li>
           </ul>
         </div>
         <div className="maritime-right">
