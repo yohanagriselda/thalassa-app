@@ -13,6 +13,7 @@ export default function LoginPage() {
     // Handle login logic here
     console.log({ email, password});
   };
+  
 
   return (
     <>
