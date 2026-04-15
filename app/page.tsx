@@ -273,7 +273,7 @@ export default function Home() {
           from { opacity: 0; transform: scale(0.9); }
           to   { opacity: 1; transform: scale(1); }
         }
-
+        
         .logo-badge {
           width: 315px;
           height: 315px;
@@ -338,7 +338,7 @@ export default function Home() {
 
         /* ── FEATURES SECTION ── */
         .features-section {
-          background: #0d0d18;
+          background: #000;
           padding: 90px 80px;
           border-top: 1px solid rgba(255,255,255,0.04);
         }
@@ -373,59 +373,61 @@ export default function Home() {
         }
  
         .feature-card {
-          background: rgba(255,255,255,0.03);
-          border: 1px solid rgba(255,255,255,0.07);
-          border-radius: 14px;
-          padding: 28px 24px;
-          transition: border-color 0.2s, background 0.2s, transform 0.2s;
+          background: #3b0d6e;
+          border: 5px;
+          border-radius: 18px;
+          padding: 28px 24px 32px 24px;
+          display: flex;
+          flex-direction: column;
+          transition: transform 0.2s;
         }
  
         .feature-card:hover {
-          border-color: rgba(139,92,246,0.4);
-          background: rgba(139,92,246,0.06);
           transform: translateY(-3px);
         }
- 
+        
         .feature-icon {
-          width: 42px;
-          height: 42px;
-          border-radius: 10px;
-          background: rgba(139,92,246,0.15);
-          border: 1px solid rgba(139,92,246,0.3);
+          width: 48px;
+          height: 48px;
+          border-radius: 12px;
+          background: white;
+          border: none;
           display: flex;
           align-items: center;
           justify-content: center;
-          margin-bottom: 16px;
+          margin-bottom: 20px;
         }
  
         .feature-name {
           font-family: 'Roboto Mono', monospace;
           font-weight: 700;
           font-size: 11px;
-          letter-spacing: 0.1em;
-          color: var(--text-white);
+          letter-spacing: 0.08em;
+          color: #fff;
           text-transform: uppercase;
-          margin-bottom: 10px;
+          margin-bottom: 12px;
         }
  
         .feature-desc {
           font-family: 'Roboto Mono', monospace;
-          font-size: 11px;
-          line-height: 1.7;
-          color: rgba(255,255,255,0.45);
-          letter-spacing: 0.02em;
+          font-size: 10px;
+          line-height: 1.75;
+          color: rgba(255,255,255,0.65);
+          letter-spacing: 0.03em;
+          text-transform: uppercase;
         }
  
         /* ── MARITIME SECTION ── */
         .maritime-section {
           background: linear-gradient(135deg, #1a0a3a 0%, #0f0720 40%, #120830 100%);
-          padding: 90px 80px;
+          padding: 130px 80px;
           display: flex;
           align-items: center;
           gap: 80px;
           border-top: 1px solid rgba(139,92,246,0.15);
           position: relative;
           overflow: hidden;
+          min-height: 100vh;
         }
  
         .maritime-section::before {
@@ -519,7 +521,7 @@ export default function Home() {
  
         .maritime-img {
           width: 100%;
-          height: 280px;
+          height: 340px;
           object-fit: cover;
           display: block;
           filter: brightness(0.8) saturate(0.85);
@@ -589,11 +591,10 @@ export default function Home() {
       {/* HERO SECTION */}
       <section className="hero">
         <img
-          src="/background_cp.jpg"
+          src="/bg_cp.png"
           alt="Background"
           className="hero-bg-img"
         />
-        <div className="hero-overlay" />
         <div className="purple-glow" />
 
         {/* Main content */}
@@ -653,7 +654,7 @@ export default function Home() {
         <div className="features-grid">
           <div className="feature-card">
             <div className="feature-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.9)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.9)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="3"/>
                 <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M16.9 16.9l2.1 2.1M19.1 4.9l-2.1 2.1M7.1 16.9l-2.1 2.1"/>
               </svg>
@@ -663,7 +664,7 @@ export default function Home() {
           </div>
           <div className="feature-card">
             <div className="feature-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.9)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.9)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
               </svg>
             </div>
@@ -672,7 +673,7 @@ export default function Home() {
           </div>
           <div className="feature-card">
             <div className="feature-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.9)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.9)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
                 <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
               </svg>
@@ -682,7 +683,7 @@ export default function Home() {
           </div>
           <div className="feature-card">
             <div className="feature-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.9)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.9)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
                 <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
               </svg>
@@ -692,7 +693,7 @@ export default function Home() {
           </div>
           <div className="feature-card">
             <div className="feature-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.9)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.9)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                 <polyline points="14 2 14 8 20 8"/>
                 <line x1="16" y1="13" x2="8" y2="13"/>
@@ -704,7 +705,7 @@ export default function Home() {
           </div>
           <div className="feature-card">
             <div className="feature-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.9)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.9)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
               </svg>
             </div>
