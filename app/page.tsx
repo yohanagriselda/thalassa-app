@@ -492,7 +492,6 @@ export default function Home() {
           display: flex;
           flex-direction: column;
           gap: 10px;
-          test:13
         }
  
         .maritime-bullets li {
