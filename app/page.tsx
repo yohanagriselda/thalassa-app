@@ -486,12 +486,13 @@ export default function Home() {
           margin-bottom: 28px;
           max-width: 480px;
         }
- 
+        
         .maritime-bullets {
           list-style: none;
           display: flex;
           flex-direction: column;
           gap: 10px;
+          test:13
         }
  
         .maritime-bullets li {
