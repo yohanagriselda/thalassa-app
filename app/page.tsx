@@ -17,8 +17,8 @@ export default function Home() {
         </div>
 
         <div className="navbar-menu">
-          <a href="#home">HOME</a>
-          <a href="#services">SERVICES</a>
+          <Link href="/">HOME</Link>
+          <Link href="/services">SERVICES</Link>
           <a href="#fleet">FLEET</a>
           <a href="#contact">CONTACT</a>
         </div>
@@ -30,10 +30,6 @@ export default function Home() {
 
       <section className="hero-section" id="home">
         <div className="hero-overlay" />
-        <div className="hero-frame frame-top-left" />
-        <div className="hero-frame frame-top-right" />
-        <div className="hero-frame frame-bottom-left" />
-        <div className="hero-frame frame-bottom-right" />
 
         <div className="system-badge">
           ■ MARITIME INTELLIGENCE SYSTEM • ONLINE
