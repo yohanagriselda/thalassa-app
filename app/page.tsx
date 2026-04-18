@@ -58,10 +58,10 @@ export default function Home() {
             Shipping &amp; Maritime Excellence since 2022
           </p>
 
-          <button className="track-btn">
+          <Link href="/tracking" className="track-btn">
             <span className="track-icon">⌕</span>
             TRACK SHIPMENT
-          </button>
+          </Link>
         </div>
       </section>
     </main>
