@@ -602,18 +602,41 @@ a {
 }
 
 .tracking-submit {
+  height: 72px;
   border: none;
   border-radius: 0 10px 10px 0;
   background: linear-gradient(90deg, #9a21ff, #c73dff);
   color: #13041d;
   font-family: "Roboto Mono", monospace;
-  font-size: 20px;
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: 2px;
   cursor: pointer;
   box-shadow:
-    0 0 30px rgba(187, 58, 255, 0.42),
-    inset 0 0 18px rgba(255, 255, 255, 0.14);
+    0 0 20px rgba(187, 58, 255, 0.32),
+    inset 0 0 18px rgba(255, 255, 255, 0.12);
+  transition:
+    background 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.12s ease,
+    filter 0.25s ease;
+}
+
+.tracking-submit:hover {
+  background: linear-gradient(90deg, #b43cff, #df69ff);
+  box-shadow:
+    0 0 28px rgba(206, 88, 255, 0.5),
+    0 0 42px rgba(173, 47, 255, 0.28),
+    inset 0 0 18px rgba(255, 255, 255, 0.16);
+  filter: brightness(1.05);
+}
+
+.tracking-submit:active {
+  background: linear-gradient(90deg, #8618de, #b533f0);
+  box-shadow:
+    0 0 14px rgba(160, 47, 255, 0.26),
+    inset 0 0 16px rgba(255, 255, 255, 0.1);
+  transform: scale(0.985);
 }
 
 .tracking-example {
