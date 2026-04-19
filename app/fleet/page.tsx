@@ -24,7 +24,6 @@ export default function FleetPage() {
 
             <section className="fleet-section">
                 <div className="main-container">
-                    {/* --- JUDUL --- */}
                     <div className="section-heading">
                         <div className="heading-accent" />
                         <div className="heading-text">
@@ -50,6 +49,37 @@ export default function FleetPage() {
                         <div className="stat-item">
                             <h2 className="stat-number">24/7</h2>
                             <p className="stat-label">LIVE MONITORING</p>
+                        </div>
+                    </div>
+
+                    {/* --- SECTION MISSION --- */}
+                    <div className="standards-section">
+                        <h2 className="standards-title">
+                            CONNECTING THE ARCHIPELAGO WITH <br />
+                            <span className="glow-text">GLOBAL MARITIME STANDARDS</span>
+                        </h2>
+                        <p className="standards-desc">
+                            Thalassa Sisterhood Group is committed to being the most trusted and innovative maritime 
+                            logistics partner in Southeast Asia, connecting strategic ports with secure, timely, 
+                            and transparent shipping services.
+                        </p>
+
+                        <div className="standards-grid">
+                            <div className="standard-card">
+                                <div className="standard-icon">🛡️</div>
+                                <h3>SAFETY</h3>
+                                <p>IMO & SOLAS Standards</p>
+                            </div>
+                            <div className="standard-card">
+                                <div className="standard-icon">📈</div>
+                                <h3>EFFICIENCY</h3>
+                                <p>Real-time route optimization</p>
+                            </div>
+                            <div className="standard-card">
+                                <div className="standard-icon">👥</div>
+                                <h3>PROFESSIONAL</h3>
+                                <p>Internationally certified crew</p>
+                            </div>
                         </div>
                     </div>
                 </div>

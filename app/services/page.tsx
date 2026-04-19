@@ -35,7 +35,7 @@ export default function ServicesPage() {
           <div className="services-heading">
             <div className="services-heading-accent" />
             <div className="services-heading-text">
-              <h1>OUR SERVICES</h1>
+              <h1>SERVICES</h1>
               <p>SERVICES OVERVIEW</p>
             </div>
             <div className="services-heading-line" />

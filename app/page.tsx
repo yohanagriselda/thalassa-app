@@ -32,7 +32,7 @@ export default function Home() {
         <div className="hero-overlay" />
 
         <div className="system-badge">
-          ■ MARITIME INTELLIGENCE SYSTEM • ONLINE
+          MARITIME INTELLIGENCE SYSTEM • ONLINE
         </div>
 
         <div className="hero-content">
