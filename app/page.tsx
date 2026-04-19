@@ -19,7 +19,7 @@ export default function Home() {
         <div className="navbar-menu">
           <Link href="/">HOME</Link>
           <Link href="/services">SERVICES</Link>
-          <a href="#fleet">FLEET</a>
+          <Link href="/fleet">FLEET</Link>
           <a href="#contact">CONTACT</a>
         </div>
 
