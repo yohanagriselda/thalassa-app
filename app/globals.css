@@ -908,8 +908,9 @@ a {
 }
 
 .services-section {
-  height: calc(100vh - 64px);
-  min-height: calc(100vh - 64px);
+  height: calc(100vh - 60px);
+  display: flex;
+  align-items: center;
   background:
     linear-gradient(rgba(4, 4, 10, 0.96), rgba(4, 4, 10, 0.98)),
     repeating-linear-gradient(
@@ -942,20 +943,16 @@ a {
 }
 
 .services-container {
-  width: 92%;
-  max-width: 1400px;
+  width: 90%;
+  max-width: 1300px;
   margin: 0 auto;
-  position: relative;
-  z-index: 2;
-  transform: translateY(0px);
-  padding-top: 100px;
 }
 
 .services-heading {
   display: flex;
   align-items: center;
-  gap: 20px;
-  margin-bottom: 50px;
+  gap: 15px;
+  margin-bottom: 25px;
 }
 
 .services-heading-accent {
@@ -967,9 +964,9 @@ a {
 }
 
 .services-heading-text h1 {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 800;
-  letter-spacing: 6px;
+  letter-spacing: 4px;
   color: #f6f1ff;
 }
 
@@ -995,14 +992,17 @@ a {
 .services-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 30px;
+  gap: 20px;
 }
 
 .service-card {
-  min-height: 250px;
-  padding: 40px;
+  min-height: 160px;
+  padding: 25px;
   border: 1px solid rgba(128, 33, 255, 0.22);
   border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   background: rgba(8, 6, 20, 0.82);
   box-shadow: inset 0 0 0 1px rgba(145, 60, 255, 0.03);
   transition:
@@ -1042,23 +1042,18 @@ a {
 }
 
 .service-icon {
-  width: 48px;
-  height: 48px;
-  display: inline-flex;
+  width: 40px;
+  height: 40px;
   align-items: center;
   justify-content: center;
   border: 1px solid rgba(149, 53, 255, 0.34);
   border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid rgba(149, 53, 255, 0.3);
   color: #a92fff;
-  font-size: 22px;
-  box-shadow:
-    0 0 16px rgba(149, 53, 255, 0.1),
-    inset 0 0 10px rgba(149, 53, 255, 0.07);
-  margin-bottom: 18px;
-  transition:
-    transform 0.28s ease,
-    box-shadow 0.28s ease,
-    color 0.28s ease;
 }
 
 .service-card:hover .service-icon {
@@ -1070,16 +1065,15 @@ a {
 }
 
 .service-card h2 {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 800;
-  letter-spacing: 1.8px;
   color: #f3effa;
-  margin-bottom: 18px;
+  margin-bottom: 10px;
 }
 
 .service-card p {
-  font-size: 15px;
-  line-height: 1.8;
+  font-size: 14px;
+  line-height: 1.5;
   color: rgba(194, 190, 210, 0.82);
 }
 
@@ -1090,14 +1084,18 @@ a {
 
 @media (max-width: 900px) {
   .services-page {
-    height: auto;
-    overflow: visible;
+    height: 100vh;
+    overflow: hidden;
+    background: #03030a;
   }
 
   .services-section {
-    height: auto;
-    min-height: calc(100vh - 64px);
-    padding: 24px 0 28px;
+    height: calc(100vh - 60px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-top: 60px;
   }
 
   .services-grid {
