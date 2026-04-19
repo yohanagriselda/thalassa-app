@@ -1475,3 +1475,96 @@ a {
   color: rgba(255, 255, 255, 0.4);
   text-transform: uppercase;
 }
+
+/*CONTACT*/
+.contact-page {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.contact-section {
+  height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-left: 100px;
+}
+
+.contact-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.contact-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.contact-items {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.contact-icon {
+  font-size: 24px;
+  filter: drop-shadow(0 0 8px rgba(160, 32, 240, 0.6));
+}
+
+.contact-label {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: rgba(194, 186, 216, 0.6);
+  font-weight: 700;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
+
+.contact-value {
+  font-size: 16px;
+  font-family: 'Roboto Mono', monospace;
+  color: #f6f1ff;
+  line-height: 1.6;
+}
+
+@keyframes blink {
+  50% { opacity: 0.3; }
+}
+
+.contact-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 100px;
+}
+
+.contact-image-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  height: 550px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(160, 32, 240, 0.3);
+  box-shadow: 0 0 40px rgba(160, 32, 240, 0.1);
+}
+
+.contact-image {
+  object-fit: cover;
+}
+
+.contact-image-wrapper:hover .contact-image {
+  transform: scale(1.05);
+}

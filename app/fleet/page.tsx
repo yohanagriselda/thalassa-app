@@ -16,7 +16,7 @@ export default function FleetPage() {
                     <Link href="/">HOME</Link>
                     <Link href="/services">SERVICES</Link>
                     <Link href="/fleet">FLEET</Link>
-                    <a href="#">CONTACT</a>
+                    <Link href="/contact">CONTACT</Link>
                 </div>
 
                 <Link href="/login" className="login-btn">LOG IN</Link>
