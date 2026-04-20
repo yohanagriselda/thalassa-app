@@ -38,9 +38,9 @@ export default function TrackingPage() {
 
         <div className="navbar-menu">
           <Link href="/">HOME</Link>
-          <a href="#">SERVICES</a>
-          <a href="#">FLEET</a>
-          <a href="#">CONTACT</a>
+          <Link href="/services">SERVICES</Link>
+          <Link href="/fleet">FLEET</Link>
+          <Link href="/contact">CONTACT</Link>
         </div>
 
         <Link href="/login" className="login-btn">
