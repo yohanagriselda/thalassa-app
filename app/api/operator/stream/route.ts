@@ -1,4 +1,5 @@
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 type Vessel = {
   id: number;
@@ -50,7 +51,7 @@ const baseVessels: Vessel[] = [
     type: "Tanker",
     status: "DELAYED",
     statusClass: "delayed",
-    speed: -1.1,
+    speed: 0.8,
     heading: 280,
     fuel: 62,
     location: "Batam Anchorage",
@@ -102,9 +103,12 @@ const baseVessels: Vessel[] = [
   },
 ];
 
-function jitter(value: number, min: number, max: number) {
-  const next = value + (Math.random() * 2 - 1) * max;
-  return Math.max(min, Number(next.toFixed(1)));
+function randomDelta(size: number) {
+  return Math.random() * size * 2 - size;
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
 }
 
 function wrapHeading(value: number) {
@@ -119,17 +123,17 @@ function updateVessels() {
     const updated = { ...vessel };
 
     if (updated.statusClass === "enroute") {
-      updated.speed = jitter(updated.speed, 8, 1.2);
+      updated.speed = Number(clamp(updated.speed + randomDelta(1.2), 8, 28).toFixed(1));
       updated.heading = wrapHeading(updated.heading);
-      updated.fuel = Math.max(10, Number((updated.fuel - Math.random() * 0.4).toFixed(1)));
-      updated.lat = Number((updated.lat + (Math.random() * 0.02 - 0.01)).toFixed(4));
-      updated.lng = Number((updated.lng + (Math.random() * 0.02 - 0.01)).toFixed(4));
+      updated.fuel = Number(clamp(updated.fuel - Math.random() * 0.4, 10, 100).toFixed(1));
+      updated.lat = Number((updated.lat + randomDelta(0.01)).toFixed(4));
+      updated.lng = Number((updated.lng + randomDelta(0.01)).toFixed(4));
     }
 
     if (updated.statusClass === "inport") {
       updated.speed = 0;
       updated.heading = 0;
-      updated.fuel = Math.min(100, Number((updated.fuel + Math.random() * 0.2).toFixed(1)));
+      updated.fuel = Number(clamp(updated.fuel + Math.random() * 0.2, 0, 100).toFixed(1));
     }
 
     if (updated.statusClass === "maintenance") {
@@ -138,7 +142,11 @@ function updateVessels() {
     }
 
     if (updated.statusClass === "delayed") {
-      updated.speed = Number((-1 * Math.random()).toFixed(1));
+      updated.speed = Number(clamp(0.3 + Math.random() * 0.8, 0, 2).toFixed(1));
+      updated.heading = wrapHeading(updated.heading);
+      updated.fuel = Number(clamp(updated.fuel - Math.random() * 0.15, 10, 100).toFixed(1));
+      updated.lat = Number((updated.lat + randomDelta(0.003)).toFixed(4));
+      updated.lng = Number((updated.lng + randomDelta(0.003)).toFixed(4));
     }
 
     return updated;
@@ -160,7 +168,7 @@ export async function GET(request: Request) {
         serverTime: new Date().toISOString(),
       });
 
-      const interval = setInterval(() => {
+      const pushFleetUpdate = () => {
         const vessels = updateVessels();
 
         const payload = {
@@ -171,12 +179,16 @@ export async function GET(request: Request) {
           inPort: vessels.filter((v) => v.statusClass === "inport").length,
           delayed: vessels.filter((v) => v.statusClass === "delayed").length,
           maintenance: vessels.filter((v) => v.statusClass === "maintenance").length,
-          selectedVesselId: 1,
+          selectedVesselId: vessels[0]?.id ?? null,
           vessels,
         };
 
         send(payload);
-      }, 3000);
+      };
+
+      pushFleetUpdate();
+
+      const interval = setInterval(pushFleetUpdate, 3000);
 
       const heartbeat = setInterval(() => {
         controller.enqueue(encoder.encode(`: heartbeat\n\n`));

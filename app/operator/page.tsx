@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 
 type Vessel = {
   id: number;
   name: string;
   type: string;
-  status: string;
+  status: "EN ROUTE" | "IN PORT" | "DELAYED" | "MAINTENANCE";
   statusClass: "enroute" | "inport" | "delayed" | "maintenance";
   speed: number;
   heading: number;
@@ -15,225 +15,162 @@ type Vessel = {
   location: string;
   lat: number;
   lng: number;
-  accent: string;
+  accent: "cyan" | "blue" | "yellow" | "red";
 };
 
-type SummaryData = {
+type FleetPayload = {
+  type: string;
+  serverTime: string;
   totalFleet: number;
   enRoute: number;
   inPort: number;
   delayed: number;
   maintenance: number;
-  selectedVesselId: number;
+  selectedVesselId: number | null;
   vessels: Vessel[];
-  serverTime: string;
 };
-
-type FilterKey = "all" | "enroute" | "inport" | "delayed" | "maintenance";
-
-const initialData: SummaryData = {
-  totalFleet: 0,
-  enRoute: 0,
-  inPort: 0,
-  delayed: 0,
-  maintenance: 0,
-  selectedVesselId: 1,
-  vessels: [],
-  serverTime: "",
-};
-
-function formatUtcTime(iso: string) {
-  if (!iso) return "--:--:-- UTC";
-
-  const date = new Date(iso);
-  return (
-    date.toLocaleTimeString("en-GB", {
-      hour12: false,
-      timeZone: "UTC",
-    }) + " UTC"
-  );
-}
-
-function formatCoord(value: number, type: "lat" | "lng") {
-  const abs = Math.abs(value).toFixed(4);
-  if (type === "lat") return `${abs}° ${value >= 0 ? "N" : "S"}`;
-  return `${abs}° ${value >= 0 ? "E" : "W"}`;
-}
 
 export default function OperatorPage() {
-  const [data, setData] = useState<SummaryData>(initialData);
-  const [selectedVesselId, setSelectedVesselId] = useState<number>(1);
-  const [selectedFilter, setSelectedFilter] = useState<FilterKey>("all");
-  const [isConnected, setIsConnected] = useState(false);
+  const [fleetData, setFleetData] = useState<FleetPayload | null>(null);
+  const [activeFilter, setActiveFilter] = useState("TOTAL FLEET");
+  const [selectedVesselId, setSelectedVesselId] = useState<number | null>(null);
+  const [connectionStatus, setConnectionStatus] = useState("CONNECTING");
+  const [lastUpdated, setLastUpdated] = useState("");
 
   useEffect(() => {
-    let isMounted = true;
     let eventSource: EventSource | null = null;
 
-    const loadInitial = async () => {
+    const loadInitialData = async () => {
       try {
-        const res = await fetch("/api/operator/summary", {
-          cache: "no-store",
-        });
-
-        const json: SummaryData = await res.json();
-
-        if (!isMounted) return;
-
-        setData(json);
-        setSelectedVesselId(json.selectedVesselId);
+        const res = await fetch("/api/operator/summary", { cache: "no-store" });
+        const data: FleetPayload = await res.json();
+        setFleetData(data);
+        setSelectedVesselId(data.selectedVesselId);
+        setLastUpdated(data.serverTime);
       } catch (error) {
-        console.error("Failed to load operator summary:", error);
+        console.error("Failed to load summary:", error);
       }
     };
 
-    loadInitial();
+    const connectStream = () => {
+      eventSource = new EventSource("/api/operator/stream");
 
-    eventSource = new EventSource("/api/operator/stream");
+      eventSource.onopen = () => {
+        setConnectionStatus("LIVE");
+      };
 
-    eventSource.onopen = () => {
-      setIsConnected(true);
-    };
+      eventSource.onmessage = (event) => {
+        const data: FleetPayload = JSON.parse(event.data);
 
-    eventSource.onmessage = (event) => {
-      try {
-        const payload = JSON.parse(event.data);
+        if (data.type === "fleet-update") {
+          setFleetData(data);
+          setLastUpdated(data.serverTime);
 
-        if (payload.type === "connected") {
-          setIsConnected(true);
-          return;
+          setSelectedVesselId((current) => {
+            const exists = data.vessels.some((v) => v.id === current);
+            if (exists) return current;
+            return data.selectedVesselId ?? data.vessels[0]?.id ?? null;
+          });
         }
+      };
 
-        if (payload.type === "fleet-update") {
-          setData(payload);
-        }
-      } catch (error) {
-        console.error("Failed to parse SSE payload:", error);
-      }
+      eventSource.onerror = () => {
+        setConnectionStatus("RECONNECTING");
+        eventSource?.close();
+        setTimeout(connectStream, 3000);
+      };
     };
 
-    eventSource.onerror = () => {
-      setIsConnected(false);
-    };
+    loadInitialData();
+    connectStream();
 
     return () => {
-      isMounted = false;
-      if (eventSource) {
-        eventSource.close();
-      }
+      eventSource?.close();
     };
   }, []);
 
-  const filteredVessels = useMemo(() => {
-    if (selectedFilter === "all") return data.vessels;
-    return data.vessels.filter((vessel) => vessel.statusClass === selectedFilter);
-  }, [data.vessels, selectedFilter]);
-
-  useEffect(() => {
-    if (!filteredVessels.length) {
-      setSelectedVesselId(0);
-      return;
-    }
-
-    const stillExists = filteredVessels.some(
-      (vessel) => vessel.id === selectedVesselId
-    );
-
-    if (!stillExists) {
-      setSelectedVesselId(filteredVessels[0].id);
-    }
-  }, [filteredVessels, selectedVesselId]);
-
-  const selected = useMemo(() => {
-    return (
-      filteredVessels.find((vessel) => vessel.id === selectedVesselId) ||
-      filteredVessels[0] ||
-      null
-    );
-  }, [filteredVessels, selectedVesselId]);
+  const vessels = fleetData?.vessels ?? [];
 
   const statItems = [
-    {
-      key: "all" as FilterKey,
-      label: "TOTAL FLEET",
-      value: data.totalFleet,
-    },
-    {
-      key: "enroute" as FilterKey,
-      label: "EN ROUTE",
-      value: data.enRoute,
-    },
-    {
-      key: "inport" as FilterKey,
-      label: "IN PORT",
-      value: data.inPort,
-    },
-    {
-      key: "delayed" as FilterKey,
-      label: "DELAYED",
-      value: data.delayed,
-    },
-    {
-      key: "maintenance" as FilterKey,
-      label: "MAINTENANCE",
-      value: data.maintenance,
-    },
+    { label: "TOTAL FLEET", value: fleetData?.totalFleet ?? 0 },
+    { label: "EN ROUTE", value: fleetData?.enRoute ?? 0 },
+    { label: "IN PORT", value: fleetData?.inPort ?? 0 },
+    { label: "DELAYED", value: fleetData?.delayed ?? 0 },
+    { label: "MAINTENANCE", value: fleetData?.maintenance ?? 0 },
   ];
+
+  const filteredVessels = useMemo(() => {
+    if (activeFilter === "TOTAL FLEET") return vessels;
+    return vessels.filter((vessel) => vessel.status === activeFilter);
+  }, [activeFilter, vessels]);
+
+  const detailVessel =
+    filteredVessels.find((v) => v.id === selectedVesselId) ||
+    filteredVessels[0] ||
+    null;
+
+  const formatCoord = (value: number, latOrLng: "lat" | "lng") => {
+    const abs = Math.abs(value).toFixed(4);
+    if (latOrLng === "lat") return `${abs}° ${value < 0 ? "S" : "N"}`;
+    return `${abs}° ${value < 0 ? "W" : "E"}`;
+  };
+
+  const formatTime = (iso: string) => {
+    if (!iso) return "--:--:-- UTC";
+    return new Date(iso).toLocaleTimeString("en-GB", {
+      hour12: false,
+      timeZone: "UTC",
+    }) + " UTC";
+  };
 
   return (
     <main className="operator-page">
       <header className="operator-topbar">
-        <div className="operator-brand">
-          <img
-            src="/logo-thalassa.png"
-            alt="Thalassa Logo"
-            className="operator-brand-logo"
-          />
-          <div className="operator-brand-text">
-            <span className="operator-brand-title">
-              THALASSA SISTERHOOD GROUP
-            </span>
-            <span className="operator-brand-sub">FLEET MONITORING</span>
+        <div className="brand-block">
+          <div className="brand-logo">
+            <Image
+              src="/logo-thalassa.png"
+              alt="Thalassa Logo"
+              width={48}
+              height={48}
+              priority
+            />
+          </div>
+          <div>
+            <h1>THALASSA SISTERHOOD GROUP</h1>
+            <p>FLEET MONITORING</p>
           </div>
         </div>
 
         <nav className="operator-nav">
-          <a href="#">FLEET</a>
+          <a href="#" className="active">FLEET</a>
           <a href="#">MAP</a>
           <a href="#">ANALYTICS</a>
         </nav>
 
         <div className="operator-actions">
-          <button className="icon-btn" type="button">
-            ⌲
-          </button>
-          <button className="role-btn" type="button">
-            OPERATOR
-          </button>
-          <Link href="/" className="logout-btn">
-            LOGOUT
-          </Link>
+          <button className="icon-btn" type="button">⛶</button>
+          <button className="operator-btn active" type="button">OPERATOR</button>
+          <button className="logout-btn" type="button">LOGOUT</button>
         </div>
       </header>
 
-      <div className="operator-livebar">
-        <span className="live-dot" />
-        <span>{isConnected ? "LIVE" : "RECONNECTING"}</span>
-        <span>{formatUtcTime(data.serverTime)}</span>
-      </div>
+      <section className="operator-livebar">
+        <span className="live-dot"></span>
+        <span>{connectionStatus}</span>
+        <span>{formatTime(lastUpdated)}</span>
+      </section>
 
       <section className="operator-stats">
         {statItems.map((item) => (
           <button
-            key={item.key}
+            key={item.label}
+            className={`stat-card stat-button ${activeFilter === item.label ? "active" : ""}`}
+            onClick={() => setActiveFilter(item.label)}
             type="button"
-            className={`stat-card ${
-              selectedFilter === item.key ? "stat-filter-active" : ""
-            }`}
-            onClick={() => setSelectedFilter(item.key)}
           >
-            <span className="stat-number">{item.value}</span>
-            <span className="stat-label">{item.label}</span>
+            <strong>{item.value}</strong>
+            <span>{item.label}</span>
           </button>
         ))}
       </section>
@@ -242,30 +179,20 @@ export default function OperatorPage() {
         <div className="operator-left">
           <div className="section-head">
             <h2>FLEET VESSELS</h2>
-            <span>{filteredVessels.length} vessels</span>
+            <span>{filteredVessels.length} Vessels</span>
           </div>
 
           <div className="vessel-grid">
             {filteredVessels.map((vessel) => (
-              <article
-                key={vessel.id}
-                className={`vessel-card vessel-${vessel.accent} ${
-                  selectedVesselId === vessel.id ? "vessel-selected" : ""
-                }`}
-                onClick={() => setSelectedVesselId(vessel.id)}
-                style={{ cursor: "pointer" }}
-              >
-                <div className="vessel-top">
-                  <span className={`vessel-status ${vessel.statusClass}`}>
-                    {vessel.status}
-                  </span>
-                  <button className="vessel-arrow" type="button">
-                    ›
-                  </button>
+              <article className={`vessel-card accent-${vessel.accent} ${detailVessel?.id === vessel.id ? "selected" : ""}`}>
+                <div className={`status-pill status-${vessel.accent}`}>
+                  {vessel.status}
                 </div>
 
-                <h3>{vessel.name}</h3>
-                <p className="vessel-type">{vessel.type}</p>
+                <div className="vessel-title-block">
+                  <h3>{vessel.name}</h3>
+                  <p className="vessel-type">{vessel.type}</p>
+                </div>
 
                 <div className="vessel-metrics">
                   <div className="metric-box">
@@ -278,86 +205,86 @@ export default function OperatorPage() {
                   </div>
                 </div>
 
-                <div className="fuel-row">
-                  <div className="fuel-track">
-                    <div
-                      className="fuel-fill"
-                      style={{ width: `${vessel.fuel}%` }}
-                    />
+                <div className="fuel-block">
+                  <div className="fuel-row">
+                    <span>FUEL</span>
+                    <span>{vessel.fuel.toFixed(1)}%</span>
                   </div>
-                  <span>{vessel.fuel.toFixed(1)}%</span>
+                  <div className="fuel-track">
+                    <div className="fuel-fill" style={{ width: `${vessel.fuel}%` }} />
+                  </div>
                 </div>
 
                 <div className="vessel-location">{vessel.location}</div>
               </article>
             ))}
 
-            {!filteredVessels.length && (
-              <div className="empty-filter-state">
-                No vessels found for this filter.
-              </div>
+            {filteredVessels.length === 0 && (
+              <div className="empty-state">No vessels found for this filter.</div>
             )}
           </div>
         </div>
 
         <aside className="operator-right">
           <div className="detail-card">
-            {selected ? (
+            <div className="detail-head">
+              <span>LIVE COORDINATES</span>
+              <button className="details-btn details-btn-inline" type="button">
+                View Full Details
+              </button>
+            </div>
+
+            {detailVessel ? (
               <>
-                <p className="detail-vessel-name">{selected.name}</p>
+                <p className="detail-name">{detailVessel.name}</p>
 
                 <div className="detail-coords">
-                  <div>{formatCoord(selected.lat, "lat")}</div>
-                  <div>{formatCoord(selected.lng, "lng")}</div>
-                </div>
-
-                <div className="detail-metrics">
-                  <div className="detail-metric-box">
-                    <span>SPEED</span>
-                    <strong>{selected.speed.toFixed(1)} kn</strong>
+                  <div className="coord-box">
+                    <span className="coord-label">LAT</span>
+                    <span className="coord-value">{formatCoord(detailVessel.lat, "lat")}</span>
                   </div>
-                  <div className="detail-metric-box">
-                    <span>HEADING</span>
-                    <strong>{selected.heading}°</strong>
+                  <div className="coord-box">
+                    <span className="coord-label">LNG</span>
+                    <span className="coord-value">{formatCoord(detailVessel.lng, "lng")}</span>
                   </div>
                 </div>
 
-                <button className="detail-btn" type="button">
-                  View Full Details
-                </button>
-              </>
+                <div className="vessel-metrics">
+                  <div className="metric-box">
+                    <span className="metric-label">SPEED</span>
+                    <strong>{detailVessel.speed.toFixed(1)} kn</strong>
+                  </div>
+                  <div className="metric-box">
+                    <span className="metric-label">HEADING</span>
+                    <strong>{detailVessel.heading}°</strong>
+                  </div>
+                </div>
+
+                        </>
             ) : (
-              <p className="detail-vessel-name">No vessel in this filter.</p>
+              <div className="empty-state">No vessel selected.</div>
             )}
           </div>
 
           <div className="status-card">
-            <h3>FLEET STATUS</h3>
+            <div className="section-head small">
+              <h2>FLEET STATUS</h2>
+            </div>
 
             <div className="status-list">
               {filteredVessels.map((vessel) => (
                 <div
                   key={vessel.id}
-                  className={`status-item ${
-                    selectedVesselId === vessel.id ? "active" : ""
-                  }`}
+                  className={`status-item ${detailVessel?.id === vessel.id ? "active" : ""}`}
                   onClick={() => setSelectedVesselId(vessel.id)}
-                  style={{ cursor: "pointer" }}
                 >
-                  <span className={`status-dot ${vessel.statusClass}`} />
                   <div>
                     <strong>{vessel.name}</strong>
-                    <p>{vessel.status}</p>
+                    <span>{vessel.status}</span>
                   </div>
-                  <span>{vessel.speed.toFixed(1)} kn</span>
+                  <em>{vessel.speed.toFixed(1)} kn</em>
                 </div>
               ))}
-
-              {!filteredVessels.length && (
-                <div className="empty-filter-state small">
-                  No status data for this filter.
-                </div>
-              )}
             </div>
           </div>
         </aside>
