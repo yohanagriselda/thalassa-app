@@ -12,11 +12,12 @@ export default function LoginPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (password === "TSG-ADMIN-2026") {
-      console.log("Logged in as Admin");
+      localStorage.setItem("userRole", "ADMIN");
       router.push("/dashboard");
     } else if (password === "TSG-OPR-2026") {
       console.log("Logged in as Operator");
-      router.push("/dashboard");
+      localStorage.setItem("userRole", "OPERATOR");
+      router.push("/operator");
     } else {
       alert("Incorrect access code. Please check Demo Credentials.")
     }

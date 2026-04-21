@@ -1,7 +1,9 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 type Vessel = {
   id: number;
@@ -31,14 +33,26 @@ type FleetPayload = {
 };
 
 export default function OperatorPage() {
+  const router = useRouter();
+
+  //logout
+  const handleLogout = () => {
+    localStorage.removeItem("userRole");
+    router.push("/login");
+  };
+
   const [fleetData, setFleetData] = useState<FleetPayload | null>(null);
   const [activeFilter, setActiveFilter] = useState("TOTAL FLEET");
   const [selectedVesselId, setSelectedVesselId] = useState<number | null>(null);
   const [connectionStatus, setConnectionStatus] = useState("CONNECTING");
   const [lastUpdated, setLastUpdated] = useState("");
-  const [openMenu, setOpenMenu] = useState<"fleet" | "map" | "analytics" | null>(null);
 
-  const menuRef = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    const role = localStorage.getItem("userRole");
+    if (role !== "OPERATOR") {
+      router.push("/login");
+    }
+  }, [router]);
 
   useEffect(() => {
     let eventSource: EventSource | null = null;
@@ -145,159 +159,16 @@ export default function OperatorPage() {
           </div>
         </div>
 
-        <nav className="operator-nav" ref={menuRef}>
-          <div className="nav-group">
-            <button
-              type="button"
-              className={`nav-trigger ${openMenu === "fleet" ? "open" : ""} ${activeFilter === "TOTAL FLEET" ? "active" : ""}`}
-              onClick={() => setOpenMenu(openMenu === "fleet" ? null : "fleet")}
-            >
-              <span className="nav-trigger-icon">⚓</span>
-              <span>FLEET</span>
-              <span className="nav-caret">▾</span>
-            </button>
-
-            {openMenu === "fleet" && (
-              <div className="nav-dropdown">
-                <div className="nav-dropdown-label">FLEET OVERVIEW</div>
-
-                <button
-                  type="button"
-                  className={`nav-dropdown-item ${activeFilter === "TOTAL FLEET" ? "active" : ""}`}
-                  onClick={() => {
-                    setActiveFilter("TOTAL FLEET");
-                    setOpenMenu(null);
-                  }}
-                >
-                  <span className="nav-item-icon">◉</span>
-                  <span className="nav-item-copy">
-                    <strong>Total Fleet</strong>
-                    <em>Show all active vessels in monitoring grid.</em>
-                  </span>
-                </button>
-
-                <button
-                  type="button"
-                  className={`nav-dropdown-item ${activeFilter === "EN ROUTE" ? "active" : ""}`}
-                  onClick={() => {
-                    setActiveFilter("EN ROUTE");
-                    setOpenMenu(null);
-                  }}
-                >
-                  <span className="nav-item-icon">↗</span>
-                  <span className="nav-item-copy">
-                    <strong>En Route</strong>
-                    <em>Focus on vessels currently sailing.</em>
-                  </span>
-                </button>
-
-                <button
-                  type="button"
-                  className={`nav-dropdown-item ${activeFilter === "IN PORT" ? "active" : ""}`}
-                  onClick={() => {
-                    setActiveFilter("IN PORT");
-                    setOpenMenu(null);
-                  }}
-                >
-                  <span className="nav-item-icon">⌂</span>
-                  <span className="nav-item-copy">
-                    <strong>In Port</strong>
-                    <em>Check ships docked at current harbor.</em>
-                  </span>
-                </button>
-              </div>
-            )}
-          </div>
-
-          <div className="nav-group">
-            <button
-              type="button"
-              className={`nav-trigger ${openMenu === "map" ? "open" : ""}`}
-              onClick={() => setOpenMenu(openMenu === "map" ? null : "map")}
-            >
-              <span className="nav-trigger-icon">✦</span>
-              <span>MAP</span>
-              <span className="nav-caret">▾</span>
-            </button>
-
-            {openMenu === "map" && (
-              <div className="nav-dropdown">
-                <div className="nav-dropdown-label">MAP LAYERS</div>
-
-                <button
-                  type="button"
-                  className="nav-dropdown-item"
-                  onClick={() => setOpenMenu(null)}
-                >
-                  <span className="nav-item-icon">◎</span>
-                  <span className="nav-item-copy">
-                    <strong>Live Coordinates</strong>
-                    <em>See real-time vessel location and heading.</em>
-                  </span>
-                </button>
-
-                <button
-                  type="button"
-                  className="nav-dropdown-item"
-                  onClick={() => setOpenMenu(null)}
-                >
-                  <span className="nav-item-icon">≋</span>
-                  <span className="nav-item-copy">
-                    <strong>Route Paths</strong>
-                    <em>Review route lines and movement history.</em>
-                  </span>
-                </button>
-              </div>
-            )}
-          </div>
-
-          <div className="nav-group">
-            <button
-              type="button"
-              className={`nav-trigger ${openMenu === "analytics" ? "open" : ""}`}
-              onClick={() => setOpenMenu(openMenu === "analytics" ? null : "analytics")}
-            >
-              <span className="nav-trigger-icon">◫</span>
-              <span>ANALYTICS</span>
-              <span className="nav-caret">▾</span>
-            </button>
-
-            {openMenu === "analytics" && (
-              <div className="nav-dropdown">
-                <div className="nav-dropdown-label">ANALYTICS PANEL</div>
-
-                <button
-                  type="button"
-                  className="nav-dropdown-item"
-                  onClick={() => setOpenMenu(null)}
-                >
-                  <span className="nav-item-icon">∆</span>
-                  <span className="nav-item-copy">
-                    <strong>Performance</strong>
-                    <em>Inspect speed, heading, and fuel efficiency.</em>
-                  </span>
-                </button>
-
-                <button
-                  type="button"
-                  className="nav-dropdown-item"
-                  onClick={() => setOpenMenu(null)}
-                >
-                  <span className="nav-item-icon">☰</span>
-                  <span className="nav-item-copy">
-                    <strong>Status Summary</strong>
-                    <em>Compare fleet condition and alerts.</em>
-                  </span>
-                </button>
-              </div>
-            )}
-          </div>
+        <nav className="operator-nav">
+          <Link href="/operator" className="active">FLEET</Link>
+          <Link href="/operator/map">MAP</Link>
+          <Link href="/operator/analytics">ANALYTICS</Link>
         </nav>
 
         <div className="operator-actions">
           <button className="icon-btn" type="button">⛶</button>
           <button className="operator-btn active" type="button">OPERATOR</button>
-          <button className="logout-btn" type="button">LOGOUT</button>
+          <button className="logout-btn" type="button" onClick={handleLogout}>LOGOUT</button>
         </div>
       </header>
 
@@ -330,7 +201,10 @@ export default function OperatorPage() {
 
           <div className="vessel-grid">
             {filteredVessels.map((vessel) => (
-              <article className={`vessel-card accent-${vessel.accent} ${detailVessel?.id === vessel.id ? "selected" : ""}`}>
+              <article 
+              key={vessel.id} 
+              className={`vessel-card accent-${vessel.accent} ${detailVessel?.id === vessel.id ? "selected" : ""}`}
+            >
                 <div className={`status-pill status-${vessel.accent}`}>
                   {vessel.status}
                 </div>
