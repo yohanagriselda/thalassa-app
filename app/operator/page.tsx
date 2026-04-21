@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 
 type Vessel = {
@@ -36,6 +36,9 @@ export default function OperatorPage() {
   const [selectedVesselId, setSelectedVesselId] = useState<number | null>(null);
   const [connectionStatus, setConnectionStatus] = useState("CONNECTING");
   const [lastUpdated, setLastUpdated] = useState("");
+  const [openMenu, setOpenMenu] = useState<"fleet" | "map" | "analytics" | null>(null);
+
+  const menuRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     let eventSource: EventSource | null = null;
@@ -142,10 +145,153 @@ export default function OperatorPage() {
           </div>
         </div>
 
-        <nav className="operator-nav">
-          <a href="#" className="active">FLEET</a>
-          <a href="#">MAP</a>
-          <a href="#">ANALYTICS</a>
+        <nav className="operator-nav" ref={menuRef}>
+          <div className="nav-group">
+            <button
+              type="button"
+              className={`nav-trigger ${openMenu === "fleet" ? "open" : ""} ${activeFilter === "TOTAL FLEET" ? "active" : ""}`}
+              onClick={() => setOpenMenu(openMenu === "fleet" ? null : "fleet")}
+            >
+              <span className="nav-trigger-icon">⚓</span>
+              <span>FLEET</span>
+              <span className="nav-caret">▾</span>
+            </button>
+
+            {openMenu === "fleet" && (
+              <div className="nav-dropdown">
+                <div className="nav-dropdown-label">FLEET OVERVIEW</div>
+
+                <button
+                  type="button"
+                  className={`nav-dropdown-item ${activeFilter === "TOTAL FLEET" ? "active" : ""}`}
+                  onClick={() => {
+                    setActiveFilter("TOTAL FLEET");
+                    setOpenMenu(null);
+                  }}
+                >
+                  <span className="nav-item-icon">◉</span>
+                  <span className="nav-item-copy">
+                    <strong>Total Fleet</strong>
+                    <em>Show all active vessels in monitoring grid.</em>
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  className={`nav-dropdown-item ${activeFilter === "EN ROUTE" ? "active" : ""}`}
+                  onClick={() => {
+                    setActiveFilter("EN ROUTE");
+                    setOpenMenu(null);
+                  }}
+                >
+                  <span className="nav-item-icon">↗</span>
+                  <span className="nav-item-copy">
+                    <strong>En Route</strong>
+                    <em>Focus on vessels currently sailing.</em>
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  className={`nav-dropdown-item ${activeFilter === "IN PORT" ? "active" : ""}`}
+                  onClick={() => {
+                    setActiveFilter("IN PORT");
+                    setOpenMenu(null);
+                  }}
+                >
+                  <span className="nav-item-icon">⌂</span>
+                  <span className="nav-item-copy">
+                    <strong>In Port</strong>
+                    <em>Check ships docked at current harbor.</em>
+                  </span>
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="nav-group">
+            <button
+              type="button"
+              className={`nav-trigger ${openMenu === "map" ? "open" : ""}`}
+              onClick={() => setOpenMenu(openMenu === "map" ? null : "map")}
+            >
+              <span className="nav-trigger-icon">✦</span>
+              <span>MAP</span>
+              <span className="nav-caret">▾</span>
+            </button>
+
+            {openMenu === "map" && (
+              <div className="nav-dropdown">
+                <div className="nav-dropdown-label">MAP LAYERS</div>
+
+                <button
+                  type="button"
+                  className="nav-dropdown-item"
+                  onClick={() => setOpenMenu(null)}
+                >
+                  <span className="nav-item-icon">◎</span>
+                  <span className="nav-item-copy">
+                    <strong>Live Coordinates</strong>
+                    <em>See real-time vessel location and heading.</em>
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  className="nav-dropdown-item"
+                  onClick={() => setOpenMenu(null)}
+                >
+                  <span className="nav-item-icon">≋</span>
+                  <span className="nav-item-copy">
+                    <strong>Route Paths</strong>
+                    <em>Review route lines and movement history.</em>
+                  </span>
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="nav-group">
+            <button
+              type="button"
+              className={`nav-trigger ${openMenu === "analytics" ? "open" : ""}`}
+              onClick={() => setOpenMenu(openMenu === "analytics" ? null : "analytics")}
+            >
+              <span className="nav-trigger-icon">◫</span>
+              <span>ANALYTICS</span>
+              <span className="nav-caret">▾</span>
+            </button>
+
+            {openMenu === "analytics" && (
+              <div className="nav-dropdown">
+                <div className="nav-dropdown-label">ANALYTICS PANEL</div>
+
+                <button
+                  type="button"
+                  className="nav-dropdown-item"
+                  onClick={() => setOpenMenu(null)}
+                >
+                  <span className="nav-item-icon">∆</span>
+                  <span className="nav-item-copy">
+                    <strong>Performance</strong>
+                    <em>Inspect speed, heading, and fuel efficiency.</em>
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  className="nav-dropdown-item"
+                  onClick={() => setOpenMenu(null)}
+                >
+                  <span className="nav-item-icon">☰</span>
+                  <span className="nav-item-copy">
+                    <strong>Status Summary</strong>
+                    <em>Compare fleet condition and alerts.</em>
+                  </span>
+                </button>
+              </div>
+            )}
+          </div>
         </nav>
 
         <div className="operator-actions">
