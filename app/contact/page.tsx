@@ -92,6 +92,7 @@ export default function ContactPage() {
                                 src="/gambar-cp-3.png"
                                 alt="Gambar tim"
                                 fill
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                 className="contact-image"
                                 priority
                             />
