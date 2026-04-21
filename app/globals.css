@@ -1495,7 +1495,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* gap: 200px; */
 }
 
 .contact-wrapper {
@@ -1505,7 +1504,6 @@ body {
   gap: 100px;
   align-items: center;
   justify-content: space-between;
-  /* margin-left: 400px; */
 }
 
 .contact-left {
@@ -1582,7 +1580,6 @@ body {
   object-fit: cover;
 }
 
-/* Responsive */
 @media (max-width: 968px) {
   .contact-wrapper {
     flex-direction: column;
@@ -2658,3 +2655,143 @@ body { background-color: var(--bg-dark); color: var(--text-main); margin: 0; }
 .anl-live-badge { color: #00ff88; border: 1px solid #00ff88; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 700; }
 .dot-live { width: 6px; height: 6px; background: #00ff88; border-radius: 50%; display: inline-block; margin-right: 8px; box-shadow: 0 0 8px #00ff88; }
 .placeholder { padding: 100px; text-align: center; color: var(--text-dim); }
+
+/*MAP*/
+:root {
+  --bg-deep: #08051a;
+  --header-bg: #05050a;
+  --card-base: #11111d;
+  --text-main: #ffffff;
+  --text-dim: #7b7b8f;
+  --accent: #8833ff;
+}
+
+* { box-sizing: border-box; }
+
+body { 
+  background-color: var(--bg-deep); 
+  color: var(--text-main); 
+  margin: 0; 
+  font-family: 'Roboto Mono', monospace; /* FONT ROBOTO MONO */
+}
+
+/* NAVBAR STYLE (SAMA DENGAN GAMBAR 1) */
+.operator-topbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 30px; background: var(--header-bg); border-bottom: 1px solid #1f1f2e;
+}
+.brand-block { display: flex; align-items: center; gap: 12px; }
+.brand-logo { 
+  width: 44px; height: 44px; border-radius: 50%; overflow: hidden; 
+  background: #fff; display: grid; place-items: center;
+}
+.brand-block h1 { font-size: 14px; margin: 0; letter-spacing: 1px; font-weight: 700; }
+.brand-block p { font-size: 10px; color: var(--text-dim); margin: 0; text-transform: uppercase;}
+
+.operator-nav { display: flex; gap: 35px; }
+.operator-nav button {
+  background: none; border: none; color: var(--text-dim);
+  font-family: 'Roboto Mono', monospace; font-size: 13px; font-weight: 600; cursor: pointer; padding: 5px 0;
+  position: relative; transition: 0.3s ease;
+}
+.operator-nav button:hover, .operator-nav button.active { color: #fff; }
+.operator-nav button.active::after {
+  content: ""; position: absolute; bottom: -4px; left: 0; width: 100%; height: 2px;
+  background: var(--accent); box-shadow: 0 0 10px var(--accent);
+}
+
+.operator-actions { display: flex; gap: 10px; }
+.operator-btn { background: rgba(136, 51, 255, 0.1); border: 1px solid #4a2a8a; color: #b080ff; padding: 8px 18px; border-radius: 6px; font-family: 'Roboto Mono', monospace; font-weight: 700; font-size: 12px; margin-right: 10px;}
+.logout-btn { background: rgba(255, 68, 68, 0.1); border: 1px solid #662222; color: #ff5555; padding: 8px 18px; border-radius: 6px; font-family: 'Roboto Mono', monospace; font-weight: 700; font-size: 12px; cursor: pointer; }
+.icon-btn { background: none; border: 1px solid #333; color: white; padding: 6px; border-radius: 6px; }
+
+/* LAYOUT MAP (Diam di tempat) */
+.map-main-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px; /* Peta kiri, Sidebar kanan 380px */
+  height: calc(100vh - 76px); /* Potong tinggi navbar */
+  overflow: hidden; /* Page utamanya gak bisa discroll kebawah */
+  background: #000;
+}
+
+.map-left-side {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background: #000;
+  border-right: 1px solid rgba(160, 71, 255, 0.1);
+  padding: 90px 20px 20px 20px;
+}
+
+.map-canvas-container { width: 100%; height: 100%; position: relative; }
+.map-image-wrapper { width: 100%; height: 100%; position: relative; }
+.map-image { object-fit: cover; }
+
+/* PIN KAPAL */
+.map-ship-pin {
+  position: absolute; width: 32px; height: 32px; border-radius: 50%;
+  display: flex; justify-content: center; align-items: center; cursor: pointer;
+  border: 2px solid #fff; box-shadow: 0 0 15px rgba(255,255,255,0.3);
+  z-index: 10; transition: transform 0.2s; font-size: 16px;
+}
+.map-ship-pin:hover { transform: scale(1.2); z-index: 20; }
+
+/* POPUP KECIL */
+.vessel-popup-overlay {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  display: flex; justify-content: center; align-items: center; pointer-events: none;
+}
+.mini-popup {
+  pointer-events: auto; background: #11111d; border: 1px solid #8833ff;
+  border-radius: 12px; padding: 20px; width: 280px; box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+  position: relative; animation: fadeIn 0.3s ease-in-out;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.close-popup { position: absolute; top: 10px; right: 10px; background: none; border: none; color: #fff; font-size: 18px; cursor: pointer; }
+.mini-popup h3 { margin: 0 0 10px 0; font-size: 16px; color: #fff; }
+.popup-info p { margin: 5px 0; font-size: 12px; color: var(--text-dim); }
+.popup-info strong { color: #fff; }
+
+/* SIDEBAR KANAN (SCROLLABLE) */
+.map-sidebar-right {
+  display: flex; flex-direction: column; background: #080810;
+  border-left: 1px solid rgba(160, 71, 255, 0.2);
+}
+.sidebar-header { padding: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+.sidebar-header h3 { font-size: 14px; margin: 0; color: #fff; }
+.vessel-count { font-size: 11px; color: var(--text-dim); }
+
+/* BAGIAN YANG BISA DI-SCROLL */
+.sidebar-scroll-area {
+  flex: 1;
+  overflow-y: auto; /* HANYA bagian ini yang bisa discroll ke bawah */
+  padding: 15px;
+}
+
+/* Styling Scrollbar */
+.sidebar-scroll-area::-webkit-scrollbar { width: 6px; }
+.sidebar-scroll-area::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); }
+.sidebar-scroll-area::-webkit-scrollbar-thumb { background: rgba(160, 71, 255, 0.3); border-radius: 10px; }
+.sidebar-scroll-area::-webkit-scrollbar-thumb:hover { background: rgba(160, 71, 255, 0.5); }
+
+/* KARTU DI SIDEBAR */
+.vessel-item-card {
+  background: rgba(255, 255, 255, 0.03); border-radius: 15px; padding: 18px; margin-bottom: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.04); cursor: pointer; transition: 0.2s;
+}
+.vessel-item-card:hover { border-color: rgba(160, 71, 255, 0.4); background: rgba(136, 51, 255, 0.05); }
+.vessel-item-card.active-card { border-color: #8833ff; background: rgba(136, 51, 255, 0.1); box-shadow: 0 0 15px rgba(136, 51, 255, 0.15); }
+
+.v-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.v-icon { font-size: 20px; color: #8833ff; }
+.v-header h4 { font-size: 14px; margin: 0; color: #fff; }
+.v-type { font-size: 10px; color: var(--text-dim); margin: 0; }
+.v-details { font-size: 12px; color: var(--text-dim); margin-bottom: 10px; }
+.v-details p { margin: 4px 0; }
+.v-details strong { color: #fff; }
+
+.v-status-row { display: flex; align-items: center; gap: 10px; font-size: 11px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; }
+.status-text { color: #fff; font-weight: 700; }
+.view-detail-btn { margin-left: auto; background: none; border: none; color: #8833ff; font-size: 10px; cursor: pointer; font-family: 'Roboto Mono', monospace;}
