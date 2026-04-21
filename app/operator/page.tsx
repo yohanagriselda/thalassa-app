@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+
 
 type Vessel = {
   id: number;
@@ -37,6 +39,7 @@ export default function OperatorPage() {
   const [connectionStatus, setConnectionStatus] = useState("CONNECTING");
   const [lastUpdated, setLastUpdated] = useState("");
   const [openMenu, setOpenMenu] = useState<"fleet" | "map" | "analytics" | null>(null);
+  const [activeView, setActiveView] = useState<"dashboard" | "map-live">("dashboard");
 
   const menuRef = useRef<HTMLElement | null>(null);
 
@@ -227,7 +230,9 @@ export default function OperatorPage() {
                 <button
                   type="button"
                   className="nav-dropdown-item"
-                  onClick={() => setOpenMenu(null)}
+                  onClick={() => {
+                    setActiveView("map-live"); 
+                    setOpenMenu(null);}}
                 >
                   <span className="nav-item-icon">◎</span>
                   <span className="nav-item-copy">
