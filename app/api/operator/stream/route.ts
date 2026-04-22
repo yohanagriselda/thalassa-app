@@ -13,6 +13,8 @@ type Vessel = {
   location: string;
   lat: number;
   lng: number;
+  captain: string;
+  crewCount: number;
   accent: string;
 };
 
@@ -29,6 +31,8 @@ const baseVessels: Vessel[] = [
     location: "Singapore",
     lat: -6.2206,
     lng: 106.838,
+    captain: "Capt. James Anderson",
+    crewCount: 25,
     accent: "cyan",
   },
   {
@@ -43,6 +47,8 @@ const baseVessels: Vessel[] = [
     location: "Port of Surabaya",
     lat: -7.2165,
     lng: 112.7298,
+    captain: "Capt. Rina Siregar",
+    crewCount: 18,
     accent: "blue",
   },
   {
@@ -57,6 +63,8 @@ const baseVessels: Vessel[] = [
     location: "Batam Anchorage",
     lat: 1.0456,
     lng: 104.0305,
+    captain: "Capt. Hendra Pratama",
+    crewCount: 22,
     accent: "yellow",
   },
   {
@@ -71,6 +79,8 @@ const baseVessels: Vessel[] = [
     location: "Tanjung Priok Dock",
     lat: -6.1048,
     lng: 106.8803,
+    captain: "Capt. Maya Lestari",
+    crewCount: 16,
     accent: "red",
   },
   {
@@ -85,6 +95,8 @@ const baseVessels: Vessel[] = [
     location: "Makassar Strait",
     lat: -2.4,
     lng: 118.1,
+    captain: "Capt. Budi Santoso",
+    crewCount: 20,
     accent: "cyan",
   },
   {
@@ -99,6 +111,8 @@ const baseVessels: Vessel[] = [
     location: "Java Sea",
     lat: -5.8,
     lng: 110.4,
+    captain: "Capt. Ahmad Fauzi",
+    crewCount: 24,
     accent: "cyan",
   },
 ];
@@ -158,7 +172,10 @@ export async function GET(request: Request) {
 
   const stream = new ReadableStream({
     start(controller) {
+      let closed = false;
+
       const send = (data: unknown) => {
+        if (closed) return;
         controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
       };
 
@@ -191,10 +208,12 @@ export async function GET(request: Request) {
       const interval = setInterval(pushFleetUpdate, 3000);
 
       const heartbeat = setInterval(() => {
+        if (closed) return;
         controller.enqueue(encoder.encode(`: heartbeat\n\n`));
       }, 15000);
 
       request.signal.addEventListener("abort", () => {
+        closed = true;
         clearInterval(interval);
         clearInterval(heartbeat);
         controller.close();

@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-
+import VesselDetailView from "../components/VesselDetailView";
+import LiveMapSection from "../components/LiveMapSection";
 
 type Vessel = {
   id: number;
@@ -17,6 +18,8 @@ type Vessel = {
   location: string;
   lat: number;
   lng: number;
+  captain: string;
+  crewCount: number;
   accent: "cyan" | "blue" | "yellow" | "red";
 };
 
@@ -32,6 +35,12 @@ type FleetPayload = {
   vessels: Vessel[];
 };
 
+type TrendPoint = {
+  time: string;
+  speed: number;
+  fuel: number;
+};
+
 export default function OperatorPage() {
   const [fleetData, setFleetData] = useState<FleetPayload | null>(null);
   const [activeFilter, setActiveFilter] = useState("TOTAL FLEET");
@@ -39,9 +48,44 @@ export default function OperatorPage() {
   const [connectionStatus, setConnectionStatus] = useState("CONNECTING");
   const [lastUpdated, setLastUpdated] = useState("");
   const [openMenu, setOpenMenu] = useState<"fleet" | "map" | "analytics" | null>(null);
-  const [activeView, setActiveView] = useState<"dashboard" | "map-live">("dashboard");
+  const [activeView, setActiveView] = useState<"dashboard" | "map-live" | "details">("dashboard");
+  const [vesselHistory, setVesselHistory] = useState<Record<number, TrendPoint[]>>({});
 
   const menuRef = useRef<HTMLElement | null>(null);
+
+  const pushHistory = (incomingVessels: Vessel[], serverTime: string) => {
+    const timeLabel = new Date(serverTime).toLocaleTimeString("en-GB", {
+      hour12: false,
+      timeZone: "UTC",
+    });
+
+    setVesselHistory((prev) => {
+      const next = { ...prev };
+
+      for (const vessel of incomingVessels) {
+        const prevSeries = next[vessel.id] ?? [];
+        const lastPoint = prevSeries[prevSeries.length - 1];
+
+        const nextPoint = {
+          time: timeLabel,
+          speed: vessel.speed,
+          fuel: vessel.fuel,
+        };
+
+        const unchanged =
+          lastPoint &&
+          lastPoint.time === nextPoint.time &&
+          lastPoint.speed === nextPoint.speed &&
+          lastPoint.fuel === nextPoint.fuel;
+
+        next[vessel.id] = unchanged
+          ? prevSeries
+          : [...prevSeries, nextPoint].slice(-12);
+      }
+
+      return next;
+    });
+  };
 
   useEffect(() => {
     let eventSource: EventSource | null = null;
@@ -50,9 +94,11 @@ export default function OperatorPage() {
       try {
         const res = await fetch("/api/operator/summary", { cache: "no-store" });
         const data: FleetPayload = await res.json();
+
         setFleetData(data);
         setSelectedVesselId(data.selectedVesselId);
         setLastUpdated(data.serverTime);
+        pushHistory(data.vessels, data.serverTime);
       } catch (error) {
         console.error("Failed to load summary:", error);
       }
@@ -71,6 +117,7 @@ export default function OperatorPage() {
         if (data.type === "fleet-update") {
           setFleetData(data);
           setLastUpdated(data.serverTime);
+          pushHistory(data.vessels, data.serverTime);
 
           setSelectedVesselId((current) => {
             const exists = data.vessels.some((v) => v.id === current);
@@ -95,8 +142,6 @@ export default function OperatorPage() {
     };
   }, []);
 
-  const vessels = fleetData?.vessels ?? [];
-
   const statItems = [
     { label: "TOTAL FLEET", value: fleetData?.totalFleet ?? 0 },
     { label: "EN ROUTE", value: fleetData?.enRoute ?? 0 },
@@ -104,6 +149,8 @@ export default function OperatorPage() {
     { label: "DELAYED", value: fleetData?.delayed ?? 0 },
     { label: "MAINTENANCE", value: fleetData?.maintenance ?? 0 },
   ];
+
+  const vessels = fleetData?.vessels ?? [];
 
   const filteredVessels = useMemo(() => {
     if (activeFilter === "TOTAL FLEET") return vessels;
@@ -123,10 +170,12 @@ export default function OperatorPage() {
 
   const formatTime = (iso: string) => {
     if (!iso) return "--:--:-- UTC";
-    return new Date(iso).toLocaleTimeString("en-GB", {
-      hour12: false,
-      timeZone: "UTC",
-    }) + " UTC";
+    return (
+      new Date(iso).toLocaleTimeString("en-GB", {
+        hour12: false,
+        timeZone: "UTC",
+      }) + " UTC"
+    );
   };
 
   return (
@@ -231,8 +280,9 @@ export default function OperatorPage() {
                   type="button"
                   className="nav-dropdown-item"
                   onClick={() => {
-                    setActiveView("map-live"); 
-                    setOpenMenu(null);}}
+                    setActiveView("map-live");
+                    setOpenMenu(null);
+                  }}
                 >
                   <span className="nav-item-icon">◎</span>
                   <span className="nav-item-copy">
@@ -326,120 +376,140 @@ export default function OperatorPage() {
         ))}
       </section>
 
-      <section className="operator-main">
-        <div className="operator-left">
-          <div className="section-head">
-            <h2>FLEET VESSELS</h2>
-            <span>{filteredVessels.length} Vessels</span>
-          </div>
-
-          <div className="vessel-grid">
-            {filteredVessels.map((vessel) => (
-              <article className={`vessel-card accent-${vessel.accent} ${detailVessel?.id === vessel.id ? "selected" : ""}`}>
-                <div className={`status-pill status-${vessel.accent}`}>
-                  {vessel.status}
-                </div>
-
-                <div className="vessel-title-block">
-                  <h3>{vessel.name}</h3>
-                  <p className="vessel-type">{vessel.type}</p>
-                </div>
-
-                <div className="vessel-metrics">
-                  <div className="metric-box">
-                    <span className="metric-label">SPEED</span>
-                    <strong>{vessel.speed.toFixed(1)} kn</strong>
-                  </div>
-                  <div className="metric-box">
-                    <span className="metric-label">HEADING</span>
-                    <strong>{vessel.heading}°</strong>
-                  </div>
-                </div>
-
-                <div className="fuel-block">
-                  <div className="fuel-row">
-                    <span>FUEL</span>
-                    <span>{vessel.fuel.toFixed(1)}%</span>
-                  </div>
-                  <div className="fuel-track">
-                    <div className="fuel-fill" style={{ width: `${vessel.fuel}%` }} />
-                  </div>
-                </div>
-
-                <div className="vessel-location">{vessel.location}</div>
-              </article>
-            ))}
-
-            {filteredVessels.length === 0 && (
-              <div className="empty-state">No vessels found for this filter.</div>
-            )}
-          </div>
-        </div>
-
-        <aside className="operator-right">
-          <div className="detail-card">
-            <div className="detail-head">
-              <span>LIVE COORDINATES</span>
-              <button className="details-btn details-btn-inline" type="button">
-                View Full Details
-              </button>
+      {activeView === "map-live" ? (
+        <LiveMapSection onBack={() => setActiveView("dashboard")} />
+      ) : activeView === "details" ? (
+        <VesselDetailView
+          vessel={detailVessel}
+          history={detailVessel ? vesselHistory[detailVessel.id] ?? [] : []}
+          lastUpdated={lastUpdated}
+          onBack={() => setActiveView("dashboard")}
+          formatCoord={formatCoord}
+          formatTime={formatTime}
+        />
+      ) : (
+        <section className="operator-main">
+          <div className="operator-left">
+            <div className="section-head">
+              <h2>FLEET VESSELS</h2>
+              <span>{filteredVessels.length} Vessels</span>
             </div>
 
-            {detailVessel ? (
-              <>
-                <p className="detail-name">{detailVessel.name}</p>
-
-                <div className="detail-coords">
-                  <div className="coord-box">
-                    <span className="coord-label">LAT</span>
-                    <span className="coord-value">{formatCoord(detailVessel.lat, "lat")}</span>
-                  </div>
-                  <div className="coord-box">
-                    <span className="coord-label">LNG</span>
-                    <span className="coord-value">{formatCoord(detailVessel.lng, "lng")}</span>
-                  </div>
-                </div>
-
-                <div className="vessel-metrics">
-                  <div className="metric-box">
-                    <span className="metric-label">SPEED</span>
-                    <strong>{detailVessel.speed.toFixed(1)} kn</strong>
-                  </div>
-                  <div className="metric-box">
-                    <span className="metric-label">HEADING</span>
-                    <strong>{detailVessel.heading}°</strong>
-                  </div>
-                </div>
-
-                        </>
-            ) : (
-              <div className="empty-state">No vessel selected.</div>
-            )}
-          </div>
-
-          <div className="status-card">
-            <div className="section-head small">
-              <h2>FLEET STATUS</h2>
-            </div>
-
-            <div className="status-list">
+            <div className="vessel-grid">
               {filteredVessels.map((vessel) => (
-                <div
+                <article
                   key={vessel.id}
-                  className={`status-item ${detailVessel?.id === vessel.id ? "active" : ""}`}
+                  className={`vessel-card accent-${vessel.accent} ${detailVessel?.id === vessel.id ? "selected" : ""}`}
                   onClick={() => setSelectedVesselId(vessel.id)}
                 >
-                  <div>
-                    <strong>{vessel.name}</strong>
-                    <span>{vessel.status}</span>
+                  <div className={`status-pill status-${vessel.accent}`}>
+                    {vessel.status}
                   </div>
-                  <em>{vessel.speed.toFixed(1)} kn</em>
-                </div>
+
+                  <div className="vessel-title-block">
+                    <h3>{vessel.name}</h3>
+                    <p className="vessel-type">{vessel.type}</p>
+                  </div>
+
+                  <div className="vessel-metrics">
+                    <div className="metric-box">
+                      <span className="metric-label">SPEED</span>
+                      <strong>{vessel.speed.toFixed(1)} kn</strong>
+                    </div>
+                    <div className="metric-box">
+                      <span className="metric-label">HEADING</span>
+                      <strong>{vessel.heading}°</strong>
+                    </div>
+                  </div>
+
+                  <div className="fuel-block">
+                    <div className="fuel-row">
+                      <span>FUEL</span>
+                      <span>{vessel.fuel.toFixed(1)}%</span>
+                    </div>
+                    <div className="fuel-track">
+                      <div className="fuel-fill" style={{ width: `${vessel.fuel}%` }} />
+                    </div>
+                  </div>
+
+                  <div className="vessel-location">{vessel.location}</div>
+                </article>
               ))}
+
+              {filteredVessels.length === 0 && (
+                <div className="empty-state">No vessels found for this filter.</div>
+              )}
             </div>
           </div>
-        </aside>
-      </section>
+
+          <aside className="operator-right">
+            <div className="detail-card">
+              <div className="detail-head">
+                <span>LIVE COORDINATES</span>
+                <button
+                  className="details-btn details-btn-inline"
+                  type="button"
+                  onClick={() => setActiveView("details")}
+                >
+                  View Full Details
+                </button>
+              </div>
+
+              {detailVessel ? (
+                <>
+                  <p className="detail-name">{detailVessel.name}</p>
+
+                  <div className="detail-coords">
+                    <div className="coord-box">
+                      <span className="coord-label">LAT</span>
+                      <span className="coord-value">{formatCoord(detailVessel.lat, "lat")}</span>
+                    </div>
+                    <div className="coord-box">
+                      <span className="coord-label">LNG</span>
+                      <span className="coord-value">{formatCoord(detailVessel.lng, "lng")}</span>
+                    </div>
+                  </div>
+
+                  <div className="vessel-metrics">
+                    <div className="metric-box">
+                      <span className="metric-label">SPEED</span>
+                      <strong>{detailVessel.speed.toFixed(1)} kn</strong>
+                    </div>
+                    <div className="metric-box">
+                      <span className="metric-label">HEADING</span>
+                      <strong>{detailVessel.heading}°</strong>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="empty-state">No vessel selected.</div>
+              )}
+            </div>
+
+            <div className="status-card">
+              <div className="section-head small">
+                <h2>FLEET STATUS</h2>
+              </div>
+
+              <div className="status-list">
+                {filteredVessels.map((vessel) => (
+                  <div
+                    key={vessel.id}
+                    className={`status-item ${detailVessel?.id === vessel.id ? "active" : ""}`}
+                    onClick={() => setSelectedVesselId(vessel.id)}
+                  >
+                    <div>
+                      <strong>{vessel.name}</strong>
+                      <span>{vessel.status}</span>
+                    </div>
+                    <em>{vessel.speed.toFixed(1)} kn</em>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </aside>
+        </section>
+      )}
     </main>
   );
 }
