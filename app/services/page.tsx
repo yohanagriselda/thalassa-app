@@ -1,83 +1,41 @@
-import Link from "next/link";
+"use client";
 
-export default function ServicesPage() {
+import Navbar from '../components/Navbar';
+import '../css/home.css';
+
+export default function Services() {
   return (
-    <main className="services-page">
-      <nav className="navbar">
-        <div className="navbar-brand">
-          <img
-            src="/logo-thalassa.png"
-            alt="Thalassa Logo"
-            className="brand-logo-img"
-          />
-          <div className="brand-text">
-            <span className="brand-name">THALASSA SISTERHOOD GROUP</span>
-            <span className="brand-sub">MARITIME CARGO SYSTEM</span>
+    <>
+      <Navbar />
+      <div className="page-container">
+        <div className="page-title-wrap">
+          <div className="page-title">SERVICES</div>
+          <div className="page-subtitle">SERVICES OVERVIEW</div>
+        </div>
+        
+        <div className="services-grid">
+          <div className="service-card">
+            <div className="service-icon">🚢</div>
+            <div className="service-title">CONTAINER SHIPPING</div>
+            <div className="service-desc">Inter-island and international container shipping with modern high-capacity fleets.</div>
+          </div>
+          <div className="service-card">
+            <div className="service-icon">⚓</div>
+            <div className="service-title">TANKER OPERATIONS</div>
+            <div className="service-desc">Transportation of fuel and liquid cargo with international safety standards.</div>
+          </div>
+          <div className="service-card">
+            <div className="service-icon">📦</div>
+            <div className="service-title">BULK CARGO</div>
+            <div className="service-desc">Handling of bulk cargo such as coal, grains, and minerals with optimal efficiency.</div>
+          </div>
+          <div className="service-card">
+            <div className="service-icon">📡</div>
+            <div className="service-title">LIVE FLEET MONITORING</div>
+            <div className="service-desc">24/7 real-time fleet monitoring system based on AIS and satellite technology.</div>
           </div>
         </div>
-
-        <div className="navbar-menu">
-          <Link href="/">HOME</Link>
-          <Link href="/services">SERVICES</Link>
-          <Link href="/fleet">FLEET</Link>
-          <Link href="/contact">CONTACT</Link>
-        </div>
-
-        <Link href="/login" className="login-btn">
-          LOG IN
-        </Link>
-      </nav>
-
-      <section className="services-section">
-        <div className="services-container">
-          <div className="services-heading">
-            <div className="services-heading-accent" />
-            <div className="services-heading-text">
-              <h1>SERVICES</h1>
-              <p>SERVICES OVERVIEW</p>
-            </div>
-            <div className="services-heading-line" />
-          </div>
-
-          <div className="services-grid">
-            <article className="service-card">
-              <div className="service-icon">⛴</div>
-              <h2>CONTAINER SHIPPING</h2>
-              <p>
-                Inter-island and international container shipping with modern
-                high-capacity fleets.
-              </p>
-            </article>
-
-            <article className="service-card">
-              <div className="service-icon">⚓</div>
-              <h2>TANKER OPERATIONS</h2>
-              <p>
-                Transportation of fuel and liquid cargo with international
-                safety standards.
-              </p>
-            </article>
-
-            <article className="service-card">
-              <div className="service-icon">◫</div>
-              <h2>BULK CARGO</h2>
-              <p>
-                Handling of bulk cargo such as coal, grains, and minerals with
-                optimal efficiency.
-              </p>
-            </article>
-
-            <article className="service-card">
-              <div className="service-icon">∿</div>
-              <h2>LIVE FLEET MONITORING</h2>
-              <p>
-                24/7 real-time fleet monitoring system based on AIS and
-                satellite technology.
-              </p>
-            </article>
-          </div>
-        </div>
-      </section>
-    </main>
+      </div>
+    </>
   );
 }

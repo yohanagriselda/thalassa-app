@@ -2,29 +2,49 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import "../css/login.css";
+import { createClient } from "../../utils/supabase/client";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const supabase = createClient();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === "TSG-ADMIN-2026") {
-      localStorage.setItem("userRole", "ADMIN");
-      router.push("/dashboard");
-    } else if (password === "TSG-OPR-2026") {
-      console.log("Logged in as Operator");
-      localStorage.setItem("userRole", "OPERATOR");
-      router.push("/operator");
-    } else {
-      alert("Incorrect access code. Please check Demo Credentials.")
+    setError("");
+    setLoading(true);
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        setError(error.message);
+        setLoading(false);
+        return;
+      }
+
+      if (data.user?.email?.includes('admin')) {
+        window.location.href = "/dashboard";
+      } else {
+        window.location.href = "/operator";
+      }
+    } catch (err: any) {
+      setError("An unexpected error occurred");
+      setLoading(false);
     }
   };
 
   return (
-    <div className="login-body"> 
+    <>
+
+
       <div className="page-wrapper">
         <img src="/background_cp.jpg" alt="Background" className="bg-img" />
         <div className="bg-overlay" />
@@ -65,34 +85,26 @@ export default function LoginPage() {
               />
             </div>
 
-            <button type="submit" className="btn-submit">
-              Access System
+            {error && <div style={{ color: "#ef4444", fontSize: "12px", marginBottom: "1rem", textAlign: "center" }}>{error}</div>}
+
+            <button type="submit" className="btn-submit" disabled={loading}>
+              {loading ? "Authenticating..." : "Access System"}
             </button>
           </form>
 
-          <div className="demo-box">
-            <div className="demo-title">Demo Credentials</div>
 
-            <div className="demo-item">
-              <span className="demo-label">Admin</span>
-              <span className="demo-code">TSG-ADMIN-2026</span>
-            </div>
-            <div className="demo-item">
-              <span className="demo-label">Operator</span>
-              <span className="demo-code">TSG-OPR-2026</span>
-            </div>
-          </div>
 
           <button
             type="button"
             className="back-link"
             onClick={() => router.push("/")}
-            style={{ marginTop: '20px' }}
           >
             ← Back to Home
           </button>
         </div>
       </div>
-    </div>
+    </>
   );
 }
+
+//login

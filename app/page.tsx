@@ -1,65 +1,30 @@
-import Link from "next/link";
+"use client";
+
+import Navbar from './components/Navbar';
+import './css/home.css';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
+  const router = useRouter();
   return (
-    <main className="thalassa-page">
-      <nav className="navbar">
-        <div className="navbar-brand">
-          <img
-            src="/logo-thalassa.png"
-            alt="Thalassa Logo"
-            className="brand-logo-img"
-          />
-          <div className="brand-text">
-            <span className="brand-name">THALASSA SISTERHOOD GROUP</span>
-            <span className="brand-sub">MARITIME CARGO SYSTEM</span>
-          </div>
-        </div>
-
-        <div className="navbar-menu">
-          <Link href="/">HOME</Link>
-          <Link href="/services">SERVICES</Link>
-          <Link href="/fleet">FLEET</Link>
-          <a href="#contact">CONTACT</a>
-        </div>
-
-        <Link href="/login" className="login-btn">
-          LOG IN
-        </Link>
-      </nav>
-
-      <section className="hero-section" id="home">
-        <div className="hero-overlay" />
-
-        <div className="system-badge">
-          MARITIME INTELLIGENCE SYSTEM • ONLINE
-        </div>
-
-        <div className="hero-content">
-          <div className="hero-logo-wrap">
-            <img
-              src="/logo-thalassa.png"
-              alt="Thalassa Sisterhood Group"
-              className="hero-logo"
-            />
-          </div>
-
-          <h1 className="hero-title">
-            <span className="hero-title-top">THALASSA</span>
-            <span className="hero-title-bottom">SISTERHOOD GROUP</span>
-          </h1>
-
-          <p className="hero-subtitle">MARITIME CARGO MONITORING SYSTEM</p>
-          <p className="hero-desc">
-            Shipping &amp; Maritime Excellence since 2022
-          </p>
-
-          <Link href="/tracking" className="track-btn">
-            <span className="track-icon">⌕</span>
+    <>
+      <Navbar />
+      <div className="page-container" style={{ padding: 0 }}>
+        <img src="/background_cp.jpg" alt="bg" className="home-bg" />
+        <div className="home-overlay" />
+        <div className="home-content">
+          <div className="pill-badge">MARITIME INTELLIGENCE SYSTEM • ONLINE</div>
+          <img src="/logo-thalassa.png" alt="Thalassa Logo" className="home-logo" />
+          <div className="home-title">THALASSA</div>
+          <div className="home-title-purple">SISTERHOOD GROUP</div>
+          <div className="home-subtitle">MARITIME CARGO MONITORING SYSTEM</div>
+          <div className="home-desc">Shipping &amp; Maritime Excellence since 2022</div>
+          <button className="btn-track" onClick={() => router.push('/track')}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             TRACK SHIPMENT
-          </Link>
+          </button>
         </div>
-      </section>
-    </main>
+      </div>
+    </>
   );
 }

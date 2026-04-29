@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { createClient } from '../../utils/supabase/client';
-const MapComponent = dynamic(() => import('../dashboard/components/MapComponent'), { 
+const MapComponent = dynamic(() => import('./components/MapComponent'), { 
   ssr: false, 
   loading: () => (
     <div className="w-full h-full bg-[#0a0a0a] rounded-2xl flex items-center justify-center border-2 border-purple-500/20 shadow-[0_0_30px_rgba(147,51,234,0.15)]">
@@ -11,7 +11,7 @@ const MapComponent = dynamic(() => import('../dashboard/components/MapComponent'
     </div>
   )
 });
-const AnalyticsComponent = dynamic(() => import('../dashboard/components/AnalyticsComponent'), { 
+const AnalyticsComponent = dynamic(() => import('./components/AnalyticsComponent'), { 
   ssr: false, 
   loading: () => (
     <div className="w-full h-96 flex items-center justify-center">
@@ -19,7 +19,14 @@ const AnalyticsComponent = dynamic(() => import('../dashboard/components/Analyti
     </div>
   ) 
 });
-
+const UserManagementComponent = dynamic(() => import('./components/UserManagementComponent'), { 
+  ssr: false, 
+  loading: () => (
+    <div className="w-full h-96 flex items-center justify-center">
+      <div className="w-8 h-8 rounded-full border-2 border-purple-500 border-t-transparent animate-spin"></div>
+    </div>
+  ) 
+});
 const initialVessels = [
   {
     id: 1,
@@ -70,13 +77,13 @@ const initialVessels = [
     colorKey: 'red'
   }
 ];
-
-export default function OperatorPage() {
+export default function DashboardPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'FLEET' | 'MAP' | 'ANALYTICS'>('FLEET');
+  const [activeTab, setActiveTab] = useState<'FLEET' | 'MAP' | 'ANALYTICS' | 'USERS'>('FLEET');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCard, setActiveCard] = useState<number>(1);
   const [fleetData, setFleetData] = useState(initialVessels);
+  const [showAddModal, setShowAddModal] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const supabase = createClient();
 
@@ -91,9 +98,13 @@ export default function OperatorPage() {
     };
     checkAuth();
   }, [router, supabase]);
-
   const [filterStatus, setFilterStatus] = useState<string | null>(null);
-
+  const [newVessel, setNewVessel] = useState({
+    name: '',
+    type: '',
+    status: 'EN ROUTE',
+    destination: ''
+  });
   useEffect(() => {
     try {
       const saved = localStorage.getItem('thalassaFleetData');
@@ -127,7 +138,31 @@ export default function OperatorPage() {
     }, 5000);
     return () => clearInterval(interval);
   }, []);
-
+  const handleAddVessel = () => {
+    if (!newVessel.name) return;
+    const colorMap: Record<string, string> = { 'EN ROUTE': 'emerald', 'IN PORT': 'sky', 'DELAYED': 'yellow', 'MAINTENANCE': 'red' };
+    setFleetData(prev => {
+      const updated = [
+        ...prev, 
+        {
+          id: Date.now(),
+          name: newVessel.name,
+          type: newVessel.type || 'Unknown Type',
+          status: newVessel.status,
+          speed: newVessel.status === 'EN ROUTE' ? '15.0' : '0.0',
+          heading: '90°',
+          weather: 'Sunny',
+          fuel: 100,
+          location: newVessel.destination || 'Unknown Port',
+          colorKey: colorMap[newVessel.status] || 'emerald'
+        }
+      ];
+      try { localStorage.setItem('thalassaFleetData', JSON.stringify(updated)); } catch(e) {}
+      return updated;
+    });
+    setShowAddModal(false);
+    setNewVessel({ name: '', type: '', status: 'EN ROUTE', destination: '' });
+  };
   const stats = {
     total: fleetData.length,
     enRoute: fleetData.filter(v => v.status === 'EN ROUTE').length,
@@ -135,7 +170,6 @@ export default function OperatorPage() {
     delayed: fleetData.filter(v => v.status === 'DELAYED').length,
     maintenance: fleetData.filter(v => v.status === 'MAINTENANCE').length
   };
-
   const getStatusColors = (key: string) => {
     switch (key) {
       case 'emerald': return { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/20', dot: 'bg-emerald-400', fill: 'bg-emerald-500', topBorder: 'border-t-emerald-500/80', glow: 'rgba(16,185,129,0.1)' };
@@ -163,11 +197,11 @@ export default function OperatorPage() {
           </div>
           <div>
             <h1 className="text-white font-bold tracking-[0.15em] text-[15px] leading-tight font-mono">THALASSA SISTERHOOD GROUP</h1>
-            <p className="text-[10px] text-gray-400 font-mono tracking-[0.2em] mt-1">OPERATOR PORTAL</p>
+            <p className="text-[10px] text-gray-400 font-mono tracking-[0.2em] mt-1">ADMIN PORTAL</p>
           </div>
         </div>
         <nav className="hidden md:flex items-center gap-8 text-[11px] font-mono tracking-widest uppercase font-bold h-full">
-        
+          {/* FLEET */}
           <div className="relative group h-full flex items-center">
             <button onClick={() => setActiveTab('FLEET')} className={`flex items-center gap-2 py-6 transition-colors ${activeTab === 'FLEET' ? 'text-white' : 'text-gray-400 hover:text-white'}`}>
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></svg>
@@ -211,6 +245,7 @@ export default function OperatorPage() {
             </div>
           </div>
 
+          {/* MAP */}
           <div className="relative group h-full flex items-center">
             <button onClick={() => setActiveTab('MAP')} className={`flex items-center gap-2 py-6 transition-colors ${activeTab === 'MAP' ? 'text-white' : 'text-gray-400 hover:text-white'}`}>
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
@@ -245,6 +280,7 @@ export default function OperatorPage() {
             </div>
           </div>
 
+          {/* ANALYTICS */}
           <div className="relative group h-full flex items-center">
             <button onClick={() => setActiveTab('ANALYTICS')} className={`flex items-center gap-2 py-6 transition-colors ${activeTab === 'ANALYTICS' ? 'text-white' : 'text-gray-400 hover:text-white'}`}>
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
@@ -278,10 +314,36 @@ export default function OperatorPage() {
               </div>
             </div>
           </div>
+
+          {/* USERS */}
+          <div className="relative group h-full flex items-center">
+            <button onClick={() => setActiveTab('USERS')} className={`flex items-center gap-2 py-6 transition-colors ${activeTab === 'USERS' ? 'text-white' : 'text-gray-400 hover:text-white'}`}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              USERS
+              <svg className="w-3.5 h-3.5 ml-0.5 opacity-50 group-hover:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+            <div className="absolute top-full left-0 w-80 bg-[#0c0914] border border-gray-800 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 overflow-hidden transform translate-y-2 group-hover:translate-y-0">
+              <div className="px-5 py-4 border-b border-gray-800 flex items-center gap-3 text-white text-[12px] tracking-widest font-bold">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-purple-400"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                USERS
+              </div>
+              <div className="p-3 space-y-1">
+                <div onClick={() => setActiveTab('USERS')} className="flex items-start gap-4 p-3 rounded-xl hover:bg-white/5 cursor-pointer transition-colors group/item">
+                  <div className="w-10 h-10 rounded-xl bg-[#1a1528] flex items-center justify-center shrink-0 border border-purple-500/20 group-hover/item:border-purple-500/50">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-purple-400"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  </div>
+                  <div>
+                    <div className="text-white text-[13px] font-bold font-mono tracking-wide capitalize mb-1">User Management</div>
+                    <div className="text-gray-500 text-[11px] font-sans tracking-normal leading-relaxed normal-case">Manage accounts: add, edit, and remove users.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </nav>
         <div className="flex items-center gap-4 text-[11px] font-mono tracking-widest font-bold">
-          <button className="px-6 py-2.5 rounded-xl border border-emerald-500/30 bg-[#0f1a16] text-emerald-400 shadow-[0_4px_15px_rgba(16,185,129,0.1)] uppercase cursor-default">
-            OPERATOR
+          <button className="px-6 py-2.5 rounded-xl border border-purple-500/30 bg-[#161224] hover:bg-[#1a152e] text-purple-400 transition-colors shadow-[0_4px_15px_rgba(139,92,246,0.1)] uppercase">
+            ADMIN
           </button>
           <button 
             className="px-6 py-2.5 rounded-xl border border-red-500/30 bg-[#1f1015] hover:bg-[#28151b] text-red-400 transition-colors shadow-[0_4px_15px_rgba(239,68,68,0.1)] uppercase" 
@@ -297,7 +359,15 @@ export default function OperatorPage() {
       <main className="p-6 max-w-[1600px] mx-auto pt-10">
         {activeTab === 'FLEET' ? (
           <>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8 mt-6">
+            <div className="flex justify-end mb-8">
+              <button 
+                onClick={() => setShowAddModal(true)}
+                className="flex items-center gap-3 px-8 py-4 rounded-xl bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-mono font-bold tracking-widest shadow-[0_0_20px_rgba(124,58,237,0.4)] hover:shadow-[0_0_30px_rgba(124,58,237,0.6)] transition-all"
+              >
+                <span className="text-xl leading-none font-sans mt-[-2px]">+</span> Add Vessel
+              </button>
+            </div>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
           <div 
             onClick={() => setFilterStatus(null)}
             className={`cursor-pointer px-6 py-5 rounded-2xl border transition-all ${filterStatus === null ? 'bg-[#0b0811] border-purple-600 shadow-[0_0_15px_rgba(147,51,234,0.15)]' : 'bg-[#080808] border-transparent hover:border-gray-800'} flex items-center gap-5`}
@@ -657,8 +727,83 @@ export default function OperatorPage() {
           </div>
         ) : activeTab === 'ANALYTICS' ? (
           <AnalyticsComponent fleetData={fleetData} />
+        ) : activeTab === 'USERS' ? (
+          <UserManagementComponent />
         ) : null}
       </main>
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#0c0a13] border border-gray-800 rounded-2xl w-full max-w-lg p-7 shadow-[0_0_40px_rgba(147,51,234,0.15)] font-mono relative">
+            <button onClick={() => setShowAddModal(false)} className="absolute top-6 right-6 text-gray-500 hover:text-white transition-colors">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <div className="flex items-center gap-3 text-white font-bold text-lg mb-8 uppercase tracking-widest">
+              <svg className="w-6 h-6 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1 .6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.9.94 5.34 2.81 7.76M19 13V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6M12 10v4M12 2v3"/>
+              </svg>
+              Add New Vessel
+            </div>
+            <div className="space-y-5">
+              <div>
+                <label className="text-[10px] text-gray-500 tracking-widest mb-2 block uppercase">Vessel Name</label>
+                <input 
+                  type="text" 
+                  value={newVessel.name}
+                  onChange={e => setNewVessel({...newVessel, name: e.target.value})}
+                  className="w-full bg-[#050505] border border-gray-800 rounded-xl p-3.5 text-white text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
+                  placeholder="e.g. MV Pacific Star"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] text-gray-500 tracking-widest mb-2 block uppercase">Vessel Type</label>
+                <input 
+                  type="text" 
+                  value={newVessel.type}
+                  onChange={e => setNewVessel({...newVessel, type: e.target.value})}
+                  className="w-full bg-[#050505] border border-gray-800 rounded-xl p-3.5 text-white text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
+                  placeholder="e.g. Container Ship"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] text-gray-500 tracking-widest mb-2 block uppercase">Initial Status</label>
+                <select 
+                  value={newVessel.status}
+                  onChange={e => setNewVessel({...newVessel, status: e.target.value})}
+                  className="w-full bg-[#050505] border border-gray-800 rounded-xl p-3.5 text-white text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all appearance-none"
+                >
+                  <option value="EN ROUTE">EN ROUTE</option>
+                  <option value="IN PORT">IN PORT</option>
+                  <option value="DELAYED">DELAYED</option>
+                  <option value="MAINTENANCE">MAINTENANCE</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-[10px] text-gray-500 tracking-widest mb-2 block uppercase">Destination</label>
+                <input 
+                  type="text"
+                  value={newVessel.destination}
+                  onChange={e => setNewVessel({...newVessel, destination: e.target.value})}
+                  className="w-full bg-[#050505] border border-gray-800 rounded-xl p-3.5 text-white text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
+                  placeholder="e.g. Port of Surabaya"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-3 mt-8">
+              <button onClick={() => setShowAddModal(false)} className="px-6 py-2.5 rounded-xl bg-[#1a1a24] text-gray-300 hover:text-white font-medium text-sm transition-colors border border-gray-800/80">
+                Cancel
+              </button>
+              <button onClick={handleAddVessel} className="px-6 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-medium text-sm shadow-[0_0_15px_rgba(147,51,234,0.3)] transition-all flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Add Vessel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,27 +1,15 @@
-import type { Metadata } from "next";
-import { Roboto_Mono } from "next/font/google";
-import "./globals.css";
+import { Roboto_Mono } from 'next/font/google';
+import './globals.css';
 
 const robotoMono = Roboto_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  display: "swap",
-  variable: "--font-roboto-mono",
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
 });
 
-export const metadata: Metadata = {
-  title: "Thalassa App",
-  description: "Fleet monitoring dashboard",
-};
-
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className={robotoMono.variable}>{children}</body>
+    <html lang="id" className={robotoMono.className}>
+      <body>{children}</body>
     </html>
   );
 }
